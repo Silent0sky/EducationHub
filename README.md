@@ -62,7 +62,7 @@
 ## 📁 File Structure
 
 ```
-education_hub_clean/
+EDUCATION_HUB/
 ├── config/                      # Configuration files
 │   ├── database.php            # Database connection class
 │   └── functions.php           # Helper functions (auth, sanitize, etc.)
@@ -73,36 +73,37 @@ education_hub_clean/
 │   └── logout.php              # Session logout handler
 │
 ├── admin/                       # Admin-only pages
-│   ├── dashboard.php           # Admin dashboard with stats
-│   ├── users.php               # User management (CRUD)
-│   └── subjects.php            # Subject management (CRUD)
+│   ├── dashboard.php           # Admin dashboard with statistics
+│   ├── users.php               # User management (CRUD operations)
+│   └── subjects.php            # Subject management (CRUD operations)
 │
 ├── includes/                    # Reusable components
-│   ├── header.php              # Page header with user info
-│   └── sidebar.php             # Navigation sidebar
+│   ├── header.php              # Page header with user info & navigation
+│   └── sidebar.php             # Side navigation menu
 │
 ├── assets/                      # Static assets
 │   └── css/
-│       ├── style.css           # Main stylesheet (748 lines)
+│       ├── style.css           # Main stylesheet
 │       ├── search_notes.css    # Search notes page styles
 │       ├── quiz.css            # Quiz page styles
 │       └── upload_notes.css    # Upload notes page styles
 │
 ├── database/                    # Database files
-│   └── education_hub.sql       # Complete database schema + seed data
+│   └── education_hub.sql       # Complete database schema with seed data
 │
 ├── uploads/                     # User uploads directory
-│   └── notes/
-│       └── .gitkeep            # Placeholder for uploaded files
+│   └── notes/                   # Uploaded study materials
 │
 ├── index.php                    # Entry point (redirects based on auth)
-├── dashboard.php                # Student/Teacher dashboard
+├── dashboard.php                # Main student/teacher dashboard
 ├── search_notes.php             # Search and download notes
 ├── download_notes.php           # File download handler
-├── upload_notes.php             # Note upload (Teachers only)
-├── quiz.php                     # Take quiz page
-├── performance.php              # Performance analytics
-├── manage_questions.php         # Add quiz questions (Teachers)
+├── upload_notes.php             # Note upload (Teachers & Admins)
+├── my_uploads.php               # Teachers view their uploads
+├── quiz.php                     # Take practice quizzes
+├── performance.php              # Student performance analytics
+├── teacher_performance.php      # Teachers view student performance
+├── manage_questions.php         # Add/manage quiz questions
 └── README.md                    # This documentation file
 ```
 
@@ -321,20 +322,55 @@ Features:
 
 #### `manage_questions.php`
 ```php
-Purpose: Teachers add quiz questions
+Purpose: Teachers manage quiz questions
 CSS Used: style.css
 Features:
 - Add question form
 - Subject and difficulty selection
 - 4 options input with correct answer selector
 - Recent questions table display
+- Edit and delete question functionality
 ```
 
-### Admin Pages
-
-#### `admin/dashboard.php`
+#### `my_uploads.php`
 ```php
-Purpose: Admin overview and stats
+Purpose: Teachers view their uploaded notes
+CSS Used: stylesystem overview and statistics
+CSS Used: style.css
+Features:
+- Platform-wide statistics (total users, subjects, notes, questions)
+- Quick action buttons for management
+- Recent users table with roles
+- System health summary
+- Activity overview
+```
+
+#### `admin/users.php`
+```php
+Purpose: User management (CRUD operations)
+CSS Used: style.css
+Features:
+- Complete users table with all information
+- Role change dropdown (instant database update)
+- Delete user functionality
+- Self-delete prevention
+- Search and filter users
+- User status management
+- Bulk actions support
+```
+
+#### `admin/subjects.php`
+```php
+Purpose: Subject and curriculum management
+CSS Used: style.css
+Features:
+- Add new subject form with year/semester selection
+- Color picker for subject theme customization
+- Icon selection for visual identification
+- All subjects table with notes/questions count
+- Delete subject functionality
+- View subjects by year and semester
+- Cascade warnings before deletion
 CSS Used: style.css
 Features:
 - Platform-wide statistics (users, subjects, notes, questions)
@@ -528,12 +564,16 @@ Each subject is assigned to a specific year and semester, allowing:
 
 ---
 
-## 👥 User Roles & Permissions
-
-| Feature | Student | Teacher | Admin |
-|---------|---------|---------|-------|
-| View Dashboard | ✅ | ✅ | ✅ |
-| Search Notes | ✅ | ✅ | ✅ |
+## 👥 Usersonal Performance | ✅ | ✅ | ✅ |
+| Upload Notes | ❌ | ✅ | ✅ |
+| Manage Own Notes | ❌ | ✅ | ✅ |
+| View My Uploads | ❌ | ✅ | ✅ |
+| Manage Quiz Questions | ❌ | ✅ | ✅ |
+| View Student Performance | ❌ | ✅ | ✅ |
+| Manage All Users | ❌ | ❌ | ✅ |
+| Manage Subjects | ❌ | ❌ | ✅ |
+| Admin Dashboard | ❌ | ❌ | ✅ |
+| View Platform Stats✅ | ✅ | ✅ |
 | Download Notes | ✅ | ✅ | ✅ |
 | Take Quiz | ✅ | ✅ | ✅ |
 | View Performance | ✅ | ✅ | ✅ |
@@ -582,26 +622,52 @@ Each subject is assigned to a specific year and semester, allowing:
    URL: http://localhost/education_hub_clean/
    ```
 
----
+---� Database Tables
 
-## 🔑 Demo Credentials
+| Table | Records | Purpose |
+|-------|---------|---------|
+| `users` | 3 | Student, teacher, and admin accounts |
+| `subjects` | 13 | All subjects organized by year/semester |
+| `notes` | 7 | Study notes uploaded by teachers |
+| `questions` | 71 | MCQ questions for various subjects |
+| `quiz_results` | Variable | Quiz attempt history and scores |
 
-| Role | Email | Password |
-|------|-------|----------|
-| **Admin** | admin@educationhub.com | password123 |
-| **Teacher** | teacher@test.com | password123 |
-| **Student** | raj@test.com | password123 |
+### Sample Data Included
+- **Subjects**: C, Marathi Literature, Entrepreneurship, Computer Fundamentals, Communication Skills, Advanced C, Business Studies, Soft Skills, Database, OOP, Data Structures, Numerical Methods, Web Development
+- **Questions**: 71 pre-loaded multiple-choice questions
+- **Notes**: 7 sample study materials
+- **Demo Users**: 
+  - Admin account for system management
+  - Teacher account for content creation
+  - Student account for learning
 
 ---
 
 ## 📸 User Flow
 
-### Student Flow
+### Student Journey
 ```
-Login → Dashboard → Search Notes → Download
-                 └→ Take Quiz → View Results → Performance
+Login → Dashboard → Explore Subjects
+    ├→ Search Notes → Download Study Materials
+    └→ Take Quiz → View Results → Track Performance
 ```
 
+### Teacher Journey
+```
+Login → Dashboard → Upload Study Notes
+    ├→ View My Uploads → Edit/Delete Notes
+    ├→ Create/Manage Quiz Questions
+    ├→ Take Quizzes (for testing)
+    └→ Monitor Student Performance
+```
+
+### Admin Journey
+```
+Login → Admin Dashboard → Manage System
+    ├→ User Management (Add/Edit/Delete)
+    ├→ Subject Management (Configure Curriculum)
+    ├→ View Platform Analytics
+    └→ Access a
 ### Teacher Flow
 ```
 Login → Dashboard → Upload Notes

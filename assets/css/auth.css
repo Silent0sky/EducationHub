@@ -1,0 +1,91 @@
+/* 
+   Authentication Pages - Login & Register Pages
+   Styles for login.php and register.php pages with centered form layout
+*/
+
+/* AUTH PAGE BACKGROUND - Full-screen container for login/register with gradient hero background */
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--gradient-hero);
+    padding: 20px;
+}
+
+/* AUTH CONTAINER - Center content wrapper with max-width constraint */
+.auth-container {
+    width: 100%;
+    max-width: 440px;
+}
+
+/* AUTH CARD - White card containing login/register form with shadow effect */
+.auth-card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+}
+
+/* AUTH HEADER - Top section with logo and title */
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+/* LOGO CONTAINER - Box with app icon and app name */
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+/* LOGO ICON - Large emoji/icon representing the app (📚 books) */
+.logo-icon { font-size: 36px; }
+
+/* LOGO HEADING - "Education Hub" text in blue */
+.logo h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+/* AUTH HEADER SUBTITLE - "Sign in to your account" text below logo */
+.auth-header p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-top: 4px;
+}
+
+/* AUTH FORM - Vertical flex container for form fields and submit button */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* AUTH FOOTER - Bottom section with "Sign up" link for new users */
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* AUTH FOOTER LINK - "Sign up" or "Sign in" anchor tag in footer */
+.auth-footer a { color: var(--primary); font-weight: 600; }
+
+/* AUTH FOOTER LINK HOVER - Underline on link hover */
+.auth-footer a:hover { text-decoration: underline; }
+
+/* MOBILE RESPONSIVE - Adjust padding and font sizes for smaller screens */
+@media (max-width: 480px) {
+    /* AUTH CARD MOBILE - Reduce padding on mobile devices */
+    .auth-card { padding: 24px; }
+    
+    /* LOGO HEADING MOBILE - Smaller logo text on mobile */
+    .logo h1 { font-size: 22px; }
+}

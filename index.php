@@ -1,36 +1,32 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Entry Point (index.php)
- * ============================================================
- * 
- * PURPOSE:
- *   This is the first page loaded when user visits the application.
- *   It checks login status and redirects accordingly.
- * 
- * LOGIC:
- *   1. If user IS logged in:
- *      - Admin → redirect to admin/dashboard.php
- *      - Student/Teacher → redirect to dashboard.php
- *   2. If user is NOT logged in:
- *      - Redirect to auth/login.php
- * 
- * WHY: This ensures users always land on the appropriate page
- *      without seeing a blank index page.
- * ============================================================
- */
+/* 
+   ============================================
+   ENTRY POINT - index.php
+   ============================================
+   Redirects users based on login status and role
+   - Logged in Admin → admin/dashboard.php
+   - Logged in User (Student/Teacher) → dashboard.php
+   - Not logged in → auth/login.php
+*/
 
+/* Include helper functions for authentication and database queries */
 require_once 'config/functions.php';
 
+/* CHECK IF USER IS LOGGED IN */
 if (isLoggedIn()) {
-    /* Admin goes to admin dashboard, others go to student/teacher dashboard */
+    /* 
+       User has valid session with user_id stored
+       Determine which dashboard to show based on role
+    */
     if (isAdmin()) {
+        /* ADMIN ROLE - Redirect to admin dashboard */
         redirect('admin/dashboard.php');
     } else {
+        /* STUDENT/TEACHER ROLE - Redirect to main dashboard */
         redirect('dashboard.php');
     }
 } else {
-    /* Not logged in → send to login page */
+    /* NOT LOGGED IN - Redirect to login page */
     redirect('auth/login.php');
 }
 ?>

@@ -1,25 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Admin Dashboard (admin/dashboard.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Overview panel for administrators showing platform-wide statistics,
- *   quick action buttons, recent users, uploaded notes, and questions.
- * 
- * ACCESS: Admin only (requireAdmin)
- * 
- * HOW IT WORKS:
- *   1. requireAdmin() blocks non-admin users
- *   2. Runs COUNT(*) queries to get totals for users, subjects, notes, etc.
- *   3. Queries recent users, all notes, and all questions for display
- *   4. Shows stat cards, quick actions, recent users table
- *   5. Shows uploaded notes and quiz questions tables (admin can see ALL)
- * 
- * CSS: ../assets/css/style.css (admin-stats, stats-grid, card, table)
- * ============================================================
- */
+/* Admin dashboard - platform stats and admin management tiles */
 
 require_once '../config/functions.php';
 requireAdmin(); // Only admins can access
@@ -64,7 +44,12 @@ $allQuestions = $conn->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Education Hub</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- Global CSS - Variables, layout, sidebar, header -->
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <!-- Common CSS - Buttons, forms, cards, tables -->
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <!-- Admin Dashboard CSS - Admin-specific styling -->
+    <link rel="stylesheet" href="../assets/css/dashboard_admin.css">
 </head>
 <body>
     <div class="layout">
@@ -73,52 +58,82 @@ $allQuestions = $conn->query("
         <main class="main-content">
             <?php include '../includes/header.php'; ?>
 
-            <section>
-                <!-- === Platform Statistics (Row 1) === -->
+            <section class="dashboard-content">
+                <!-- === SYSTEM OVERVIEW (3-Column Admin Tiles) === -->
+                <!-- Platform overview with Students, Teachers, Subjects counts -->
+                <div class="admin-tiles-grid">
+                    <!-- STUDENTS TILE - Count of all student users in system -->
+                    <div class="admin-tile admin-tile-students">
+                        <div class="admin-tile-icon">🎓</div>
+                        <div class="admin-tile-content">
+                            <div class="admin-tile-value"><?= $totalStudents ?></div>
+                            <div class="admin-tile-label">Students</div>
+                        </div>
+                    </div>
+
+                    <!-- TEACHERS TILE - Count of all teacher users in system -->
+                    <div class="admin-tile admin-tile-teachers">
+                        <div class="admin-tile-icon">👨‍🏫</div>
+                        <div class="admin-tile-content">
+                            <div class="admin-tile-value"><?= $totalTeachers ?></div>
+                            <div class="admin-tile-label">Teachers</div>
+                        </div>
+                    </div>
+
+                    <!-- SUBJECTS TILE - Count of all academic subjects -->
+                    <div class="admin-tile admin-tile-subjects">
+                        <div class="admin-tile-icon">📚</div>
+                        <div class="admin-tile-content">
+                            <div class="admin-tile-value"><?= $totalSubjects ?></div>
+                            <div class="admin-tile-label">Subjects</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === DETAILED STATISTICS (Full-Width Cards) === -->
+                <!-- Additional platform metrics below overview tiles -->
+                <h3 class="admin-stats-heading">Platform Statistics</h3>
                 <div class="admin-stats">
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-value"><?= $totalUsers ?></div>
-                        <div class="stat-label">Total Users</div>
+                    <!-- TOTAL USERS CARD - Count of all registered users -->
+                    <div class="stat-card" style="position: relative;">
+                        <div class="admin-stats-icon" style="font-size: 40px;">👥</div>
+                        <div class="admin-stats-content">
+                            <div class="admin-stats-value"><?= $totalUsers ?></div>
+                            <div class="admin-stats-label">Total Users</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🎓</div>
-                        <div class="stat-value"><?= $totalStudents ?></div>
-                        <div class="stat-label">Students</div>
+
+                    <!-- NOTES CARD - Total notes uploaded to system -->
+                    <div class="stat-card" style="position: relative;">
+                        <div class="admin-stats-icon" style="font-size: 40px;">📝</div>
+                        <div class="admin-stats-content">
+                            <div class="admin-stats-value"><?= $totalNotes ?></div>
+                            <div class="admin-stats-label">Notes Uploaded</div>
+                        </div>
                     </div>
-                    <div class="stat-card success">
-                        <div class="stat-icon">👨‍🏫</div>
-                        <div class="stat-value"><?= $totalTeachers ?></div>
-                        <div class="stat-label">Teachers</div>
+
+                    <!-- QUESTIONS CARD - Total quiz questions in system -->
+                    <div class="stat-card" style="position: relative;">
+                        <div class="admin-stats-icon" style="font-size: 40px;">❓</div>
+                        <div class="admin-stats-content">
+                            <div class="admin-stats-value"><?= $totalQuestions ?></div>
+                            <div class="admin-stats-label">Quiz Questions</div>
+                        </div>
                     </div>
-                    <div class="stat-card warning">
-                        <div class="stat-icon">📚</div>
-                        <div class="stat-value"><?= $totalSubjects ?></div>
-                        <div class="stat-label">Subjects</div>
+
+                    <!-- QUIZ ATTEMPTS CARD - Total quiz attempts by all students -->
+                    <div class="stat-card" style="position: relative;">
+                        <div class="admin-stats-icon" style="font-size: 40px;">📊</div>
+                        <div class="admin-stats-content">
+                            <div class="admin-stats-value"><?= $totalQuizzes ?></div>
+                            <div class="admin-stats-label">Quiz Attempts</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- === Platform Statistics (Row 2) === -->
-                <div class="stats-grid" style="margin-bottom: 32px;">
-                    <div class="stat-card">
-                        <div class="stat-icon">📝</div>
-                        <div class="stat-value"><?= $totalNotes ?></div>
-                        <div class="stat-label">Notes Uploaded</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">❓</div>
-                        <div class="stat-value"><?= $totalQuestions ?></div>
-                        <div class="stat-label">Quiz Questions</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-value"><?= $totalQuizzes ?></div>
-                        <div class="stat-label">Quizzes Taken</div>
-                    </div>
-                </div>
-
-                <!-- === Quick Actions === -->
-                <div class="card" style="margin-bottom: 32px;">
+                <!-- === QUICK ACTIONS === -->
+                <!-- Fast navigation buttons for common admin tasks -->
+                <div class="card" style="margin-bottom: 32px; margin-top: 32px;">
                     <div class="card-header">
                         <h3 class="card-title">⚡ Admin Actions</h3>
                     </div>
@@ -131,14 +146,15 @@ $allQuestions = $conn->query("
                     </div>
                 </div>
 
-                <!-- === Recent Users Table === -->
+                <!-- === RECENT USERS TABLE === -->
+                <!-- Show latest registered users -->
                 <div class="card" style="margin-bottom: 32px;">
                     <div class="card-header">
                         <h3 class="card-title">👥 Recent Users</h3>
                         <a href="users.php" class="btn btn-sm btn-secondary">View All</a>
                     </div>
                     <div class="table-container">
-                        <table>
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -148,12 +164,13 @@ $allQuestions = $conn->query("
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- LOOP THROUGH RECENT USERS -->
                                 <?php while ($user = $recentUsers->fetch_assoc()): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($user['name']) ?></td>
                                     <td><?= htmlspecialchars($user['email']) ?></td>
                                     <td>
-                                        <span style="text-transform: capitalize; color: <?= $user['role'] === 'admin' ? 'var(--danger)' : ($user['role'] === 'teacher' ? 'var(--success)' : 'var(--primary)') ?>; font-weight: 600;">
+                                        <span class="role-badge <?= strtolower($user['role']) ?>">
                                             <?= $user['role'] ?>
                                         </span>
                                     </td>
@@ -165,14 +182,15 @@ $allQuestions = $conn->query("
                     </div>
                 </div>
 
-                <!-- === All Uploaded Notes (Admin can see everything) === -->
+                <!-- === ALL UPLOADED NOTES === -->
+                <!-- Admin can see all notes uploaded across the platform -->
                 <div class="card" style="margin-bottom: 32px;">
                     <div class="card-header">
                         <h3 class="card-title">📝 All Uploaded Notes</h3>
                     </div>
                     <?php if ($allNotes->num_rows > 0): ?>
                     <div class="table-container">
-                        <table>
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>Title</th>
@@ -204,14 +222,15 @@ $allQuestions = $conn->query("
                     <?php endif; ?>
                 </div>
 
-                <!-- === All Quiz Questions (Admin can see all) === -->
+                <!-- === ALL QUIZ QUESTIONS === -->
+                <!-- Admin can see all quiz questions from all teachers -->
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">❓ All Quiz Questions</h3>
                     </div>
                     <?php if ($allQuestions->num_rows > 0): ?>
                     <div class="table-container">
-                        <table>
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>Question</th>

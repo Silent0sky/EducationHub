@@ -1,29 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Search Notes (search_notes.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Search and download study notes filtered by year, semester,
- *   subject, and keyword search.
- * 
- * HOW IT WORKS:
- *   1. Gets filter values from URL query parameters (?year=FY&semester=1&search=PHP)
- *   2. Builds dynamic SQL query with WHERE conditions for each filter
- *   3. JOINs notes → subjects → users to get subject name and uploader
- *   4. Displays year tabs (FY/SY/TY), semester tabs, search bar
- *   5. Shows filtered notes as cards with download button
- * 
- * FILTERS:
- *   - Year tabs: FY, SY, TY (click to filter)
- *   - Semester tabs: Sem 1-2 for FY, Sem 3-4 for SY, etc.
- *   - Subject dropdown: Filter by specific subject
- *   - Search input: Search by title or content keyword
- * 
- * CSS: assets/css/style.css + assets/css/search_notes.css
- * ============================================================
- */
+/* Search and download notes filtered by year, semester, subject, and keyword */
 
 require_once 'config/functions.php';
 requireLogin();
@@ -33,28 +9,57 @@ $pageTitle = 'Search Notes';
 /* Get all subjects for the dropdown filter */
 $subjects = $conn->query("SELECT * FROM subjects ORDER BY year, semester, name");
 
-/* --- Read filter values from URL --- */
-$searchQuery = sanitize($_GET['search'] ?? '');
+/* --- Read filter values from URL (without htmlspecialchars encoding) --- */
+$searchQuery = trim($_GET['search'] ?? '');
 $subjectFilter = (int)($_GET['subject'] ?? 0);
-$yearFilter = sanitize($_GET['year'] ?? '');
+$yearFilter = trim($_GET['year'] ?? '');
 $semesterFilter = (int)($_GET['semester'] ?? 0);
 
-/* --- Build dynamic SQL query --- */
-/* Base query: JOIN notes with subjects and users */
+/* --- Build dynamic SQL query using prepared statements --- */
 $sql = "SELECT n.*, s.name as subject_name, s.color as subject_color, s.year, s.semester, u.name as uploader_name 
         FROM notes n 
         JOIN subjects s ON n.subject_id = s.id 
         JOIN users u ON n.uploaded_by = u.id 
         WHERE 1=1";
 
+$params = [];
+$types = "";
+
 /* Add WHERE conditions based on active filters */
-if ($searchQuery) $sql .= " AND (n.title LIKE '%$searchQuery%' OR n.content LIKE '%$searchQuery%')";
-if ($subjectFilter) $sql .= " AND n.subject_id = $subjectFilter";
-if ($yearFilter) $sql .= " AND s.year = '$yearFilter'";
-if ($semesterFilter) $sql .= " AND s.semester = $semesterFilter";
+if ($searchQuery) {
+    $sql .= " AND (n.title LIKE ? OR n.content LIKE ?)";
+    $searchWildcard = "%$searchQuery%";
+    $params[] = $searchWildcard;
+    $params[] = $searchWildcard;
+    $types .= "ss";
+}
+if ($subjectFilter) {
+    $sql .= " AND n.subject_id = ?";
+    $params[] = $subjectFilter;
+    $types .= "i";
+}
+if ($yearFilter) {
+    $sql .= " AND s.year = ?";
+    $params[] = $yearFilter;
+    $types .= "s";
+}
+if ($semesterFilter) {
+    $sql .= " AND s.semester = ?";
+    $params[] = $semesterFilter;
+    $types .= "i";
+}
 
 $sql .= " ORDER BY s.year, s.semester, n.created_at DESC";
-$notes = $conn->query($sql);
+
+/* Execute prepared statement */
+$stmt = $conn->prepare($sql);
+if ($stmt && !empty($params)) {
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $notes = $stmt->get_result();
+} else {
+    $notes = $conn->query($sql);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,8 +67,9 @@ $notes = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Notes - Education Hub</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/search_notes.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/notes.css">
 </head>
 <body>
     <div class="layout">
@@ -82,14 +88,14 @@ $notes = $conn->query($sql);
                 <!-- === Year Tabs (FY / SY / TY) === -->
                 <!-- Each tab links back to this page with year parameter -->
                 <div class="year-tabs">
-                    <a href="?year=" class="year-tab <?= empty($yearFilter) ? 'active' : '' ?>">All Years</a>
-                    <a href="?year=FY" class="year-tab <?= $yearFilter === 'FY' ? 'active' : '' ?>">
+                    <a href="?<?php echo http_build_query(array_filter(['search' => $searchQuery, 'subject' => $subjectFilter])); ?>" class="year-tab <?= empty($yearFilter) ? 'active' : '' ?>">All Years</a>
+                    <a href="?<?php echo http_build_query(array_filter(['year' => 'FY', 'search' => $searchQuery, 'subject' => $subjectFilter])); ?>" class="year-tab <?= $yearFilter === 'FY' ? 'active' : '' ?>">
                         <span class="year-badge fy">FY</span> First Year
                     </a>
-                    <a href="?year=SY" class="year-tab <?= $yearFilter === 'SY' ? 'active' : '' ?>">
+                    <a href="?<?php echo http_build_query(array_filter(['year' => 'SY', 'search' => $searchQuery, 'subject' => $subjectFilter])); ?>" class="year-tab <?= $yearFilter === 'SY' ? 'active' : '' ?>">
                         <span class="year-badge sy">SY</span> Second Year
                     </a>
-                    <a href="?year=TY" class="year-tab <?= $yearFilter === 'TY' ? 'active' : '' ?>">
+                    <a href="?<?php echo http_build_query(array_filter(['year' => 'TY', 'search' => $searchQuery, 'subject' => $subjectFilter])); ?>" class="year-tab <?= $yearFilter === 'TY' ? 'active' : '' ?>">
                         <span class="year-badge ty">TY</span> Third Year
                     </a>
                 </div>
@@ -102,9 +108,9 @@ $notes = $conn->query($sql);
                     $semesters = ['FY' => [1, 2], 'SY' => [3, 4], 'TY' => [5, 6]];
                     $availableSems = $semesters[$yearFilter] ?? [];
                     ?>
-                    <a href="?year=<?= $yearFilter ?>" class="semester-tab <?= !$semesterFilter ? 'active' : '' ?>">All Semesters</a>
+                    <a href="?<?php echo http_build_query(array_filter(['year' => $yearFilter, 'search' => $searchQuery, 'subject' => $subjectFilter])); ?>" class="semester-tab <?= !$semesterFilter ? 'active' : '' ?>">All Semesters</a>
                     <?php foreach ($availableSems as $sem): ?>
-                    <a href="?year=<?= $yearFilter ?>&semester=<?= $sem ?>" 
+                    <a href="?<?php echo http_build_query(array_filter(['year' => $yearFilter, 'semester' => $sem, 'search' => $searchQuery, 'subject' => $subjectFilter])); ?>" 
                        class="semester-tab <?= $semesterFilter == $sem ? 'active' : '' ?>">
                         Semester <?= $sem ?>
                     </a>

@@ -1,0 +1,236 @@
+/* 
+   Education Hub - Global Styles & CSS Variables
+   This file contains all global CSS variables, reset styles, and base layout components
+   used throughout the entire application (all pages and all roles).
+*/
+
+/* ROOT VARIABLES - Color palette, spacing, shadows, transitions used across the entire app */
+:root {
+    --primary: #1a56db;
+    --primary-dark: #1e40af;
+    --primary-light: #dbeafe;
+    --primary-lighter: #eff6ff;
+    --sky: #38bdf8;
+    --sky-light: #e0f2fe;
+    --sky-dark: #0284c7;
+    --secondary: #4f46e5;
+    --secondary-light: #e0e7ff;
+    --success: #059669;
+    --success-light: #d1fae5;
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --background: #f0f5ff;
+    --surface: #ffffff;
+    --surface-light: #f1f5f9;
+    --surface-border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --border: #e2e8f0;
+    --border-focus: #1a56db;
+    --gradient-primary: linear-gradient(135deg, #1a56db 0%, #38bdf8 100%);
+    --gradient-sidebar: linear-gradient(180deg, #0f2557 0%, #1a365d 100%);
+    --gradient-success: linear-gradient(135deg, #059669 0%, #38bdf8 100%);
+    --gradient-warning: linear-gradient(135deg, #d97706 0%, #dc2626 100%);
+    --gradient-hero: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 50%, #e0e7ff 100%);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.08);
+    --shadow-primary: 0 4px 14px rgba(26, 86, 219, 0.3);
+    --shadow-sky: 0 4px 14px rgba(56, 189, 248, 0.25);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+    --transition: all 0.3s ease;
+}
+
+/* UNIVERSAL SELECTOR - Reset margins, padding, and set border-box sizing for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY TAG - Main document background, text color, font family for entire app */
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ANCHOR TAGS - Default link styling (no underline, inherit color) */
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* SCROLLBAR STYLING - Custom scrollbar for webkit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface-light); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; opacity: 0.5; }
+::-webkit-scrollbar-thumb:hover { opacity: 0.8; }
+
+/* LAYOUT WRAPPER - Main flex container that holds sidebar and main content */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR - Left navigation panel (fixed, dark background, contains nav links) */
+.sidebar {
+    width: 260px;
+    background: var(--gradient-sidebar);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    color: white;
+    overflow-y: auto;
+}
+
+/* SIDEBAR LOGO - Education Hub logo/branding at top of sidebar */
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* SIDEBAR NAVIGATION LIST - Container for all navigation links */
+.sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+/* NAVIGATION LINK - Individual navigation menu item (Dashboard, Quizzes, Notes, etc.) */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+/* NAV LINK HOVER STATE - Highlight navigation item on mouse hover */
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* NAV LINK ACTIVE STATE - Highlight current/active navigation item */
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 600;
+}
+
+/* NAVIGATION ICON - Icon emoji/symbol next to nav link text */
+.nav-icon { font-size: 18px; }
+
+/* LOGOUT LINK - Bottom navigation item for logging out */
+.logout-link {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: auto;
+    padding-top: 12px;
+}
+
+/* MAIN CONTENT AREA - Right side of layout, offset by sidebar width, contains page content */
+.main-content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 24px;
+}
+
+/* HEADER BAR - Top bar with page title and user info (breadcrumb area) */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* PAGE TITLE - Large heading/title of current page */
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* USER INFO SECTION - Right side of header with user avatar, name, role */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* USER AVATAR CIRCLE - Profile picture placeholder with initials */
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 14px;
+    box-shadow: var(--shadow-primary);
+}
+
+/* USER NAME & ROLE CONTAINER - Text showing user's name and role */
+.user-details { text-align: right; }
+
+/* USER NAME TEXT - Login name displayed in header */
+.user-name { font-weight: 600; font-size: 14px; color: var(--text); }
+
+/* USER ROLE BADGE - Shows role (Admin, Teacher, Student) in header */
+.user-role { font-size: 12px; color: var(--text-muted); text-transform: capitalize; }
+
+/* RESPONSIVE DESIGN - Tablet and mobile layouts */
+@media (max-width: 768px) {
+    /* SIDEBAR MOBILE - Hide sidebar on mobile, show when toggled */
+    .sidebar {
+        transform: translateX(-100%);
+        z-index: 1000;
+        transition: transform 0.3s ease;
+    }
+    
+    /* SIDEBAR OPEN STATE - Show sidebar when menu is activated on mobile */
+    .sidebar.open { transform: translateX(0); }
+
+    /* MAIN CONTENT MOBILE - Full width on mobile when sidebar is hidden */
+    .main-content { margin-left: 0; padding: 20px 16px; }
+    
+    /* HEADER MOBILE - Stack title and user info vertically on mobile */
+    .header { flex-direction: column; gap: 16px; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+    .main-content { padding: 16px 12px; }
+    .page-title { font-size: 24px; }
+}

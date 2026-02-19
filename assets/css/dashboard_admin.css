@@ -1,0 +1,448 @@
+/* 
+   ============================================
+   ADMIN DASHBOARD CSS - dashboard_admin.css
+   ============================================
+   Styling for admin-specific dashboard view
+   (admin/dashboard.php)
+   
+   Components:
+   - System overview tiles (Students, Teachers, Subjects)
+   - Full-width statistics cards for platform metrics
+   - Recent users table with quick actions
+   - Recent uploads and questions listings
+*/
+
+/* =====================================================
+   ADMIN TILES SECTION (3-Column Overview)
+   ===================================================== */
+
+/* ADMIN TILES GRID - Three-column grid for system overview */
+.admin-tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* ADMIN TILE - Large overview card showing key platform metrics */
+.admin-tile {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    transition: all 0.3s ease;
+}
+
+/* ADMIN TILE HOVER - Enhance card on hover */
+.admin-tile:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+/* ADMIN TILE ICON - Large icon for tile type */
+.admin-tile-icon {
+    font-size: 48px;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* ADMIN TILE CONTENT - Text content section of tile */
+.admin-tile-content {
+    flex: 1;
+}
+
+/* ADMIN TILE VALUE - Large metric number in overview tile */
+.admin-tile-value {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+/* ADMIN TILE LABEL - Description of metric in overview tile */
+.admin-tile-label {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ADMIN TILE STUDENTS - Blue accent for students tile */
+.admin-tile-students {
+    border-top: 4px solid #3b82f6;
+}
+
+/* ADMIN TILE TEACHERS - Purple accent for teachers tile */
+.admin-tile-teachers {
+    border-top: 4px solid #a855f7;
+}
+
+/* ADMIN TILE SUBJECTS - Green accent for subjects tile */
+.admin-tile-subjects {
+    border-top: 4px solid #10b981;
+}
+
+/* =====================================================
+   STATISTICS CARDS SECTION
+   ===================================================== */
+
+/* STAT CARD BASE - Container for metric display (needed for positioning) */
+.stat-card {
+    position: relative;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+/* ADMIN STATS SECTION - Container for full-width stat cards */
+.admin-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 32px;
+}
+
+/* ADMIN STATS SECTION HEADING - Title for stats section */
+.admin-stats-heading {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+}
+
+/* ADMIN STAT CARD - Large horizontal stat tile */
+.admin-stats .stat-card {
+    min-height: 120px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+/* ADMIN STAT CARD HOVER - Enhance on hover */
+.admin-stats .stat-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+/* ADMIN STAT CARD ACCENT - Colored bar on left side of card */
+.admin-stats .stat-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+/* ADMIN STAT ICON - Large emoji icon in stat card */
+.admin-stats .stat-card > div:first-child {
+    font-size: 40px;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* ADMIN STAT CONTENT - Container for value and label */
+.admin-stats .stat-card > div:last-child {
+    flex: 1;
+}
+
+/* ADMIN STAT VALUE - Large number showing metric value */
+.admin-stats .stat-card > div:last-child > div:first-child {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+
+/* ADMIN STAT LABEL - Description of stat metric */
+.admin-stats .stat-card > div:last-child > div:last-child {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* =====================================================
+   SECTION CONTAINERS
+   ===================================================== */
+
+/* ADMIN SECTION - Container for grouped admin data */
+.admin-section {
+    margin-bottom: 32px;
+}
+
+/* ADMIN SECTION TITLE - Title for data section */
+.admin-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+}
+
+/* =====================================================
+   TABLES SECTION
+   ===================================================== */
+
+/* ADMIN TABLE - Styled table for user/data display */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+/* TABLE HEADER - Header row styling */
+.table thead {
+    background: var(--bg-light);
+    border-bottom: 2px solid var(--border);
+}
+
+/* TABLE HEADER CELL - Individual header cell */
+.table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* TABLE BODY ROW - Individual data row */
+.table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background-color 0.2s ease;
+}
+
+/* TABLE BODY ROW HOVER - Highlight on row hover */
+.table tbody tr:hover {
+    background-color: var(--bg-light);
+}
+
+/* TABLE CELL - Individual cell styling */
+.table td {
+    padding: 14px 16px;
+    color: var(--text);
+}
+
+/* TABLE CELL STRONG - Emphasized text in table */
+.table strong {
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* STATUS BADGE - Badge for showing user/item status */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+/* STATUS BADGE ACTIVE - Green badge for active items */
+.status-badge.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* STATUS BADGE INACTIVE - Gray badge for inactive items */
+.status-badge.inactive {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* ROLE BADGE - Badge for displaying user role */
+.role-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+/* ROLE BADGE STUDENT - Blue badge for students */
+.role-badge.student {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* ROLE BADGE TEACHER - Purple badge for teachers */
+.role-badge.teacher {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+/* ROLE BADGE ADMIN - Red badge for admins */
+.role-badge.admin {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* =====================================================
+   ACTION BUTTONS
+   ===================================================== */
+
+/* ACTION BUTTON - Button for admin actions in tables */
+.btn-action {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* EDIT ACTION BUTTON - Button to edit items */
+.btn-edit {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.btn-edit:hover {
+    background: #c7d2fe;
+}
+
+/* DELETE ACTION BUTTON - Button to delete items */
+.btn-delete {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn-delete:hover {
+    background: #fecaca;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+   ===================================================== */
+
+/* TABLET VIEW - Adjust layout for tablet screens */
+@media (max-width: 1024px) {
+    .admin-tiles-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .admin-tile {
+        padding: 24px 20px;
+    }
+    
+    .admin-tile-icon {
+        font-size: 40px;
+    }
+    
+    .admin-tile-value {
+        font-size: 32px;
+    }
+}
+
+/* SMALL TABLET VIEW - Further adjustments */
+@media (max-width: 768px) {
+    .admin-tiles-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .admin-tile {
+        padding: 20px 16px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .admin-tile-icon {
+        font-size: 36px;
+        min-width: auto;
+    }
+    
+    .admin-stats .stat-card {
+        flex-direction: column;
+        min-height: auto;
+        text-align: center;
+        padding: 24px 20px;
+    }
+    
+    .admin-stats .stat-icon {
+        font-size: 36px;
+        min-width: auto;
+        margin-bottom: 12px;
+    }
+    
+    .table {
+        font-size: 13px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 10px 12px;
+    }
+}
+
+/* MOBILE VIEW - Single column layout on mobile devices */
+@media (max-width: 480px) {
+    .admin-tiles-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .admin-tile {
+        padding: 16px 12px;
+        gap: 12px;
+    }
+    
+    .admin-tile-icon {
+        font-size: 32px;
+    }
+    
+    .admin-tile-value {
+        font-size: 28px;
+    }
+    
+    .admin-tile-label {
+        font-size: 13px;
+    }
+    
+    .admin-stats .stat-card {
+        padding: 20px 16px;
+        gap: 16px;
+    }
+    
+    .admin-stats .stat-icon {
+        font-size: 32px;
+    }
+    
+    .admin-stats .stat-value {
+        font-size: 32px;
+    }
+    
+    .table {
+        font-size: 12px;
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 10px;
+    }
+    
+    .status-badge,
+    .role-badge,
+    .btn-action {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+}

@@ -1,28 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Download Note Handler (download_notes.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Handles file downloads when user clicks "Download" on a note.
- *   Increments the download counter and serves the file.
- * 
- * HOW IT WORKS:
- *   1. Gets note ID from URL (?id=5)
- *   2. Validates the note exists in database
- *   3. Increments the downloads counter (UPDATE SET downloads + 1)
- *   4. If physical file exists → sends it as a download with proper headers
- *   5. If no file → generates a .txt file from the note's content field
- * 
- * HTTP HEADERS:
- *   - Content-Type: application/octet-stream (forces download)
- *   - Content-Disposition: attachment (tells browser to download, not display)
- *   - Content-Length: file size in bytes
- * 
- * SECURITY: requireLogin() ensures only logged-in users can download
- * ============================================================
- */
+/* File download handler - serves note files for download */
 
 require_once 'config/functions.php';
 requireLogin();

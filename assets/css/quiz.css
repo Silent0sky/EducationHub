@@ -1,37 +1,10 @@
-/**
- * ============================================================
- * Education Hub - Quiz Page Stylesheet (quiz.css)
- * ============================================================
- * 
- * FILE NAVIGATION:
- *   LOADED BY: quiz.php (via <link rel="stylesheet">)
- *   DEPENDS ON: style.css (CSS variables: --primary, --surface, etc.)
- *   
- *   quiz.php has THREE visual states:
- *     State 1 → Subject Selection (year tabs → semester tabs → subject cards)
- *     State 2 → Quiz Taking (progress bar → question cards → submit)
- *     State 3 → Results (score circle → stats → answer review)
- *
- * BACKEND FLOW (quiz.php):
- *   1. Subject cards loaded from: SELECT s.*, COUNT(q.id) FROM subjects s LEFT JOIN questions q
- *   2. Quiz questions loaded from: SELECT * FROM questions WHERE subject_id = ? ORDER BY RAND() LIMIT 10
- *   3. Results calculated by: comparing POST answers[] with correct_answer column
- *   4. Score saved to: INSERT INTO quiz_results (user_id, subject_id, score, total, percentage)
- *
- * DATABASE TABLES USED:
- *   - subjects (id, name, icon, color, year, semester)
- *   - questions (id, subject_id, question_text, option_a/b/c/d, correct_answer)
- *   - quiz_results (id, user_id, subject_id, score, total_questions, percentage)
- * 
- * COLOR SCHEME: Royal Blue + Sky Blue (inherits from style.css)
- * ============================================================
- */
+/* 
+   Quiz Pages - Quiz listing, question answering, and results display
+   Styles for quiz.php (list page) and quiz taking/results pages
+   Includes year tabs, semester selection, subject cards, questions, and results
+*/
 
-
-/* ===========================================================
-   HERO SECTION — Title banner at top of quiz page (State 1)
-   Gradient background: primary-light → sky-light
-   =========================================================== */
+/* QUIZ HERO BANNER - Top banner section with title and description */
 .quiz-hero {
     text-align: center;
     padding: 40px 24px;
@@ -41,26 +14,21 @@
     border: 1px solid var(--border);
 }
 
+/* QUIZ HERO TITLE - Large heading "Quizzes" in hero banner */
 .quiz-hero h1 {
     font-size: 32px;
     font-weight: 800;
     margin-bottom: 8px;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
 }
 
+/* QUIZ HERO SUBTITLE - Description text in hero banner */
 .quiz-hero p {
     color: var(--text-muted);
     font-size: 15px;
 }
 
-
-/* ===========================================================
-   YEAR TABS — FY / SY / TY selection (State 1)
-   Each tab has a colored year badge (green/amber/red).
-   Clicking a tab reloads page with ?year=FY filter.
-   =========================================================== */
+/* YEAR TABS ROW - Horizontal tabs to filter by academic year (FY, SY, TY) */
 .year-tabs {
     display: flex;
     gap: 12px;
@@ -68,6 +36,7 @@
     flex-wrap: wrap;
 }
 
+/* YEAR TAB BUTTON - Individual year tab button (First Year, Second Year, etc.) */
 .year-tab {
     display: flex;
     align-items: center;
@@ -83,13 +52,13 @@
     box-shadow: var(--shadow-sm);
 }
 
+/* YEAR TAB HOVER - Highlight year tab on hover */
 .year-tab:hover {
     border-color: var(--primary);
-    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
 
-/* Active year: filled with royal blue */
+/* YEAR TAB ACTIVE - Highlight selected year tab with primary color */
 .year-tab.active {
     background: var(--primary);
     border-color: var(--primary);
@@ -97,7 +66,7 @@
     box-shadow: var(--shadow-primary);
 }
 
-/* Year badge pill */
+/* YEAR BADGE - Small label showing year abbreviation (FY, SY, TY) */
 .year-badge {
     padding: 4px 10px;
     border-radius: 6px;
@@ -105,17 +74,19 @@
     font-weight: 700;
 }
 
+/* YEAR BADGE FY - First Year badge in green */
 .year-badge.fy { background: var(--success); color: white; }
+
+/* YEAR BADGE SY - Second Year badge in orange/warning */
 .year-badge.sy { background: var(--warning); color: white; }
+
+/* YEAR BADGE TY - Third Year badge in red/danger */
 .year-badge.ty { background: var(--danger); color: white; }
 
+/* YEAR BADGE ACTIVE STATE - Light background when parent tab is active */
 .year-tab.active .year-badge { background: rgba(255, 255, 255, 0.3); }
 
-
-/* ===========================================================
-   SEMESTER TABS — Pill-style (Sem 1 / Sem 2) (State 1)
-   Appears when a year is selected. Filters subjects further.
-   =========================================================== */
+/* SEMESTER TABS - Pill-style semester selector (Sem 1 / Sem 2) */
 .semester-tabs {
     display: flex;
     gap: 8px;
@@ -127,6 +98,7 @@
     box-shadow: var(--shadow-sm);
 }
 
+/* SEMESTER TAB BUTTON - Individual semester button (Sem 1 or Sem 2) */
 .semester-tab {
     padding: 10px 20px;
     background: transparent;
@@ -139,14 +111,13 @@
     cursor: pointer;
 }
 
+/* SEMESTER TAB HOVER - Highlight semester tab background on hover */
 .semester-tab:hover { background: var(--surface-light); color: var(--text); }
+
+/* SEMESTER TAB ACTIVE - Highlight selected semester with primary color */
 .semester-tab.active { background: var(--primary); color: white; }
 
-
-/* ===========================================================
-   SUBJECT SELECTION GRID — Clickable subject cards (State 1)
-   Each card links to quiz.php?subject=ID to start quiz
-   =========================================================== */
+/* SUBJECT SELECTION GRID - Grid layout for quiz subject cards */
 .subject-selection-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -154,6 +125,7 @@
     margin-top: 24px;
 }
 
+/* QUIZ SUBJECT CARD - Card for each subject with quiz availability */
 .quiz-subject-card {
     position: relative;
     background: var(--surface);
@@ -161,7 +133,7 @@
     padding: 28px;
     border: 2px solid var(--border);
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
@@ -169,7 +141,7 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* Top accent stripe (hidden → visible on hover) */
+/* QUIZ SUBJECT CARD ACCENT - Colored bar at top of card (shows on hover) */
 .quiz-subject-card::before {
     content: '';
     position: absolute;
@@ -180,18 +152,22 @@
     transition: opacity 0.3s;
 }
 
+/* QUIZ SUBJECT CARD HOVER - Highlight card border and show accent bar */
 .quiz-subject-card:hover {
-    transform: translateY(-6px);
     border-color: var(--primary);
     box-shadow: var(--shadow-lg);
 }
+
+/* QUIZ SUBJECT CARD HOVER ACCENT - Show accent bar on hover */
 .quiz-subject-card:hover::before { opacity: 1; }
 
-/* Disabled card (no questions) */
+/* QUIZ SUBJECT CARD DISABLED - Gray out cards with no available quizzes */
 .quiz-subject-card.disabled { opacity: 0.5; cursor: not-allowed; }
-.quiz-subject-card.disabled:hover { transform: none; box-shadow: var(--shadow-sm); }
 
-/* Icon box */
+/* QUIZ SUBJECT CARD DISABLED HOVER - Don't highlight disabled cards on hover */
+.quiz-subject-card.disabled:hover { box-shadow: var(--shadow-sm); }
+
+/* SUBJECT CARD ICON - Colored square with emoji icon */
 .subject-card-icon {
     width: 56px; height: 56px;
     border-radius: var(--radius-md);
@@ -203,6 +179,7 @@
     background: var(--primary-light);
 }
 
+/* SUBJECT CARD YEAR BADGE - Academic year label on subject card */
 .subject-card-year {
     font-size: 12px; font-weight: 600; color: var(--text-muted);
     margin-bottom: 8px; padding: 4px 10px;
@@ -210,10 +187,13 @@
     display: inline-block; border-radius: 6px;
 }
 
+/* SUBJECT CARD TITLE - Subject name heading in card */
 .subject-card-title { font-size: 17px; font-weight: 700; margin-bottom: 12px; line-height: 1.4; color: var(--text); }
 
+/* SUBJECT CARD STATS - Row with question count and other metadata */
 .subject-card-stats { display: flex; align-items: center; gap: 8px; }
 
+/* STAT BADGE - Small colored badge showing count (e.g., "5 Questions") */
 .stat-badge {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; background: var(--primary-lighter);
@@ -221,7 +201,7 @@
     font-weight: 500;
 }
 
-/* Arrow icon (bottom-right) */
+/* SUBJECT CARD ARROW - Arrow icon in bottom-right of card */
 .subject-card-arrow {
     position: absolute; right: 20px; bottom: 20px;
     width: 36px; height: 36px; border-radius: 50%;
@@ -229,13 +209,14 @@
     display: flex; align-items: center; justify-content: center;
     transition: var(--transition); font-size: 16px; color: var(--text-muted);
 }
+
+/* SUBJECT CARD ARROW HOVER - Highlight arrow on card hover */
 .quiz-subject-card:hover .subject-card-arrow {
     background: var(--primary); color: white;
-    transform: translateX(4px);
     box-shadow: var(--shadow-primary);
 }
 
-/* "No questions" badge */
+/* NO QUESTIONS BADGE - Badge shown when subject has no quizzes */
 .no-questions-badge {
     position: absolute; right: 16px; bottom: 20px;
     padding: 6px 12px; background: var(--danger-light); color: var(--danger);
@@ -243,9 +224,7 @@
 }
 
 
-/* ===========================================================
-   QUIZ HEADER — Back link + quiz title (State 2)
-   =========================================================== */
+/* QUIZ HEADER */
 .quiz-header { margin-bottom: 24px; }
 
 .back-link {
@@ -258,11 +237,7 @@
 .quiz-header h2 { font-size: 26px; font-weight: 700; color: var(--text); }
 
 
-/* ===========================================================
-   PROGRESS BAR — Quiz completion tracker (State 2)
-   Shows "3 / 10" answered. Bar fills with gradient.
-   JavaScript updates width via updateProgress() function.
-   =========================================================== */
+/* PROGRESS BAR */
 .quiz-progress-container { margin-bottom: 28px; }
 
 .quiz-progress-header {
@@ -284,14 +259,11 @@
     height: 100%;
     background: var(--gradient-primary);
     border-radius: 10px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s ease;
 }
 
 
-/* ===========================================================
-   QUESTION CARD — One question at a time (State 2)
-   Left accent stripe indicates active question.
-   =========================================================== */
+/* QUESTION CARD */
 .quiz-question-card {
     background: var(--surface);
     border-radius: var(--radius-xl);
@@ -330,7 +302,6 @@
 
 /* ===========================================================
    ANSWER OPTIONS — Radio buttons styled as cards (State 2)
-   Each option: indicator circle (A/B/C/D) + text label
    =========================================================== */
 .quiz-options-grid { display: grid; gap: 12px; }
 
@@ -339,13 +310,12 @@
     display: flex; align-items: center; gap: 16px;
     padding: 16px 20px; background: var(--surface-light);
     border-radius: var(--radius-md); cursor: pointer;
-    border: 2px solid transparent; transition: var(--transition);
+    border: 2px solid transparent; transition: all 0.3s ease;
 }
 
 .quiz-option:hover {
     border-color: var(--primary);
     background: var(--primary-light);
-    transform: translateX(6px);
 }
 
 /* Hide native radio */
@@ -359,19 +329,19 @@
 .quiz-option input[type="radio"]:checked + .option-indicator::after { content: '✓'; }
 .quiz-option input[type="radio"]:checked ~ .option-text { color: var(--primary); font-weight: 600; }
 
-/* Circle indicator (A/B/C/D) */
+/* Circle indicator */
 .option-indicator {
     width: 36px; height: 36px; min-width: 36px;
     border-radius: 50%; border: 2px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 14px; transition: var(--transition);
+    font-weight: 700; font-size: 14px; transition: all 0.3s ease;
 }
 
 .option-text { font-size: 15px; flex: 1; color: var(--text); }
 
 
 /* ===========================================================
-   SUBMIT SECTION — "Submit Quiz" button area (State 2)
+   SUBMIT SECTION
    =========================================================== */
 .quiz-submit-section {
     text-align: center;
@@ -385,13 +355,12 @@
     padding: 16px 44px; font-size: 17px; font-weight: 700;
     background: var(--gradient-primary); color: white;
     border: none; border-radius: var(--radius-lg);
-    cursor: pointer; transition: var(--transition);
+    cursor: pointer; transition: box-shadow 0.3s ease;
     box-shadow: var(--shadow-primary);
     font-family: inherit;
 }
 
 .quiz-submit-btn:hover {
-    transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(26, 86, 219, 0.35);
 }
 
@@ -443,9 +412,7 @@
 
 .score-value {
     font-size: 34px; font-weight: 800;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
 }
 
 .score-label { font-size: 13px; color: var(--text-muted); }
@@ -462,10 +429,7 @@
 .btn-lg { padding: 14px 28px; font-size: 15px; }
 
 
-/* ===========================================================
-   REVIEW SECTION — Answer review cards (State 3)
-   Green left stripe = correct, red = wrong
-   =========================================================== */
+/* REVIEW SECTION */
 .review-title { text-align: left; font-size: 20px; margin-bottom: 18px; color: var(--text); }
 
 .review-list { display: flex; flex-direction: column; gap: 14px; text-align: left; }
@@ -498,9 +462,7 @@
 .correct-answer { color: var(--success); font-weight: 600; }
 
 
-/* ===========================================================
-   EMPTY STATE
-   =========================================================== */
+/* EMPTY STATE */
 .empty-state {
     grid-column: 1 / -1;
     text-align: center; padding: 60px 30px;
@@ -513,9 +475,7 @@
 .empty-state p { color: var(--text-muted); }
 
 
-/* ===========================================================
-   RESPONSIVE
-   =========================================================== */
+/* RESPONSIVE */
 @media (max-width: 768px) {
     .year-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 8px; }
     .year-tab { white-space: nowrap; padding: 10px 16px; font-size: 14px; }

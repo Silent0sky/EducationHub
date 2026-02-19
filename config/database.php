@@ -1,33 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Database Configuration (database.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Establishes a connection to the MySQL database using MySQLi.
- *   This file is included by functions.php and used globally.
- * 
- * HOW IT WORKS:
- *   1. Defines database constants (host, user, password, database name)
- *   2. Creates a Database class that wraps MySQLi connection
- *   3. Provides helper methods: query(), prepare(), escape(), lastInsertId()
- *   4. Starts PHP session if not already started (needed for login system)
- *   5. Creates global $db and $conn objects for use in all pages
- * 
- * TECHNOLOGY:
- *   - MySQLi (MySQL Improved) for database operations
- *   - UTF-8 character encoding for multilingual support
- *   - PHP sessions for user authentication state
- * 
- * CONFIGURATION:
- *   Change DB_HOST, DB_USER, DB_PASS, DB_NAME if your XAMPP
- *   setup uses different credentials.
- * ============================================================
- */
-
-/* --- Database Connection Constants --- */
-/* These must match your XAMPP MySQL settings */
+/* Database configuration and MySQLi connection */
 define('DB_HOST', 'localhost');   // MySQL server address (localhost for XAMPP)
 define('DB_USER', 'root');       // MySQL username (root is XAMPP default)
 define('DB_PASS', '');           // MySQL password (empty is XAMPP default)

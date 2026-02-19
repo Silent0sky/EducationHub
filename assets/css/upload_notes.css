@@ -1,42 +1,9 @@
-/**
- * ============================================================
- * Education Hub - Upload Notes Stylesheet (upload_notes.css)
- * ============================================================
- * 
- * FILE NAVIGATION:
- *   LOADED BY: upload_notes.php (via <link rel="stylesheet">)
- *   DEPENDS ON: style.css (CSS variables, btn classes, form-group)
- *
- * BACKEND FLOW (upload_notes.php):
- *   1. requireTeacher() — only teachers/admins can access
- *   2. GET request: shows form with subject dropdown, file upload area
- *   3. POST request:
- *      a. Validates title and subject_id
- *      b. Handles file upload: move_uploaded_file() to uploads/notes/
- *      c. INSERT INTO notes (title, content, file_path, subject_id, uploaded_by)
- *   4. JavaScript handles:
- *      - Year button toggle (FY/SY/TY) → updates semester buttons
- *      - Semester button toggle → filters subject dropdown
- *      - Drag & drop file upload with visual feedback
- *
- * NAVIGATES TO:
- *   ← dashboard.php (sidebar link)
- *   ← manage_questions.php (sidebar link)
- *   → my_uploads.php (to see uploaded notes)
- *
- * DATABASE TABLES:
- *   - subjects (id, name, year, semester) — for dropdown population
- *   - notes (id, title, content, file_path, subject_id, uploaded_by)
- *
- * COLOR SCHEME: Royal Blue + Sky Blue (inherits from style.css)
- * ============================================================
- */
+/* 
+   Upload Notes Page - Teacher/Admin Note Upload Form
+   Styles for upload_notes.php form with subject selection, file upload, etc.
+*/
 
-
-/* ===========================================================
-   HERO SECTION — Page title with success-tinted gradient
-   Green-to-blue gradient suggests "upload/contribute" action
-   =========================================================== */
+/* UPLOAD HERO BANNER - Top section with title and instructions */
 .upload-hero {
     text-align: center;
     padding: 36px 24px;
@@ -46,26 +13,24 @@
     border: 1px solid var(--border);
 }
 
+/* UPLOAD HERO TITLE - Heading "Upload Notes" */
 .upload-hero h1 {
     font-size: 28px;
     font-weight: 800;
     margin-bottom: 6px;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
 }
 
+/* UPLOAD HERO SUBTITLE - Description text under heading */
 .upload-hero p { color: var(--text-muted); font-size: 15px; }
 
-
-/* ===========================================================
-   UPLOAD FORM CONTAINER — Centered, max-width limited
-   =========================================================== */
+/* UPLOAD CONTAINER - Center and constrain upload form to max-width */
 .upload-container {
     max-width: 700px;
     margin: 0 auto;
 }
 
+/* UPLOAD FORM - Main form card with padding and shadow */
 .upload-form {
     background: var(--surface);
     border-radius: var(--radius-xl);
@@ -74,7 +39,7 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* 2-column grid for year/semester selectors side by side */
+/* FORM GRID - 2-column layout for year and semester selectors */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -82,10 +47,10 @@
     margin-bottom: 24px;
 }
 
-/* Full-width items span both columns */
+/* FULL WIDTH FORM GROUP - Make certain form groups span both columns */
 .form-group.full-width { grid-column: 1 / -1; }
 
-/* Labels in upload form */
+/* FORM LABEL - Text label for form fields */
 .form-group label {
     display: block;
     margin-bottom: 8px;
@@ -94,7 +59,7 @@
     color: var(--text);
 }
 
-/* Inputs in upload form */
+/* FORM INPUTS - Text, select, textarea fields styling */
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -109,6 +74,7 @@
     transition: var(--transition);
 }
 
+/* FORM INPUT FOCUS STATE - Highlight input on focus with blue border and shadow */
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
@@ -117,19 +83,19 @@
     box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
 }
 
-
-/* ===========================================================
-   YEAR / SEMESTER SELECTORS — Toggle button groups
-   JavaScript toggles .active class on click.
-   Clicking a year button updates semester options.
-   =========================================================== */
+/* YEAR SELECTOR - Container for year button group */
 .year-selector,
+
+/* SEMESTER SELECTOR - Container for semester button group */
 .semester-selector {
     display: flex;
     gap: 8px;
 }
 
+/* YEAR BUTTON - Individual button for year selection (FY, SY, TY) */
 .year-btn,
+
+/* SEMESTER BUTTON - Individual button for semester selection (Sem 1, Sem 2) */
 .sem-btn {
     flex: 1;
     padding: 12px 16px;
@@ -146,7 +112,6 @@
 
 .year-btn:hover, .sem-btn:hover { border-color: var(--primary); }
 
-/* Active state: filled royal blue */
 .year-btn.active, .sem-btn.active {
     background: var(--primary);
     border-color: var(--primary);
@@ -155,11 +120,7 @@
 }
 
 
-/* ===========================================================
-   FILE UPLOAD AREA — Drag-and-drop zone
-   Dashed border, click to browse, drag to upload
-   JavaScript handles dragover/dragleave/drop events
-   =========================================================== */
+/* FILE UPLOAD AREA */
 .file-upload-area {
     border: 2px dashed var(--border);
     border-radius: var(--radius-lg);
@@ -170,7 +131,7 @@
     background: var(--surface-light);
 }
 
-/* Hover/drag-over: blue border + light bg */
+/* Hover/drag-over state */
 .file-upload-area:hover,
 .file-upload-area.dragover {
     border-color: var(--primary);
@@ -182,7 +143,7 @@
 .browse-link { color: var(--primary); font-weight: 600; text-decoration: underline; }
 .file-types { font-size: 13px; color: var(--text-muted); }
 
-/* Selected file feedback (shown by JS after file selection) */
+/* Selected file feedback */
 .selected-file {
     display: none;
     margin-top: 14px; padding: 10px 14px;

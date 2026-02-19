@@ -1,79 +1,118 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Upload Notes (upload_notes.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Teachers upload PDF study notes for students.
- *   Includes Year/Semester/Subject selection and file upload.
- * 
- * ACCESS: Teachers and Admins only (requireTeacher)
- * 
- * HOW IT WORKS:
- *   1. Gets all subjects from database for dropdown
- *   2. On form POST:
- *      a. Validates title and subject are filled
- *      b. If file uploaded: moves to uploads/notes/ directory
- *      c. INSERTs new record into notes table
- *      d. Shows success/error message
- *   3. JavaScript handles:
- *      - Year/Semester button toggles
- *      - Dynamic subject dropdown filtering
- *      - Drag & drop file upload area
- * 
- * FILE UPLOAD:
- *   - Accepted: .pdf, .doc, .docx, .txt, .ppt, .pptx
- *   - Saved to: uploads/notes/ with timestamp prefix
- *   - move_uploaded_file() moves from PHP temp to final location
- * 
- * CSS: assets/css/style.css + assets/css/upload_notes.css
- * ============================================================
- */
+/* 
+   ============================================
+   TEACHER NOTE UPLOAD PAGE - upload_notes.php
+   ============================================
+   Allows teachers to upload course materials:
+   1. Validates form input (title, subject, file)
+   2. Handles drag-and-drop file upload
+   3. Stores file in uploads/notes directory
+   4. Records upload in database with metadata
+   
+   Access: Teachers only (requireTeacher() check)
+*/
 
+/* Include configuration and helper functions */
 require_once 'config/functions.php';
+/* Verify user is a teacher before allowing access */
 requireTeacher();
 
+/* PAGE IDENTIFIER FOR HEADER */
 $pageTitle = 'Upload Notes';
+/* Will store success/error messages from form submission */
 $success = '';
 $error = '';
 
-/* Get subjects for the dropdown (all years/semesters) */
+/* 
+   FETCH ALL SUBJECTS - For dropdown selector
+   Used to let teacher choose which subject to upload notes for
+   Subjects include year and semester information
+*/
 $subjects = $conn->query("SELECT * FROM subjects ORDER BY year, semester, name");
 
-/* --- Handle POST: Process file upload form --- */
+/* 
+   ============================================
+   HANDLE FORM SUBMISSION (POST REQUEST)
+   ============================================
+   Process when teacher submits the upload form
+   Validates inputs and saves note to database
+*/
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    /* 
+       EXTRACT AND SANITIZE FORM INPUT
+       - title: Note name for identification
+       - content: Description or content of the notes
+       - subject_id: Which subject this note belongs to
+       - uploadedBy: Current teacher's ID from session
+    */
     $title = sanitize($_POST['title'] ?? '');
     $content = sanitize($_POST['content'] ?? '');
     $subjectId = (int)($_POST['subject_id'] ?? 0);
     $uploadedBy = $_SESSION['user_id'];
 
+    /* 
+       VALIDATION - Check required fields
+       Title and subject are mandatory
+    */
     if (empty($title) || empty($subjectId)) {
         $error = 'Please fill in all required fields';
     } else {
+        /* Initialize file path as null (optional file upload) */
         $filePath = null;
 
-        /* Handle file upload if a file was selected */
+        /* 
+           ============================================
+           HANDLE FILE UPLOAD - Optional file attachment
+           ============================================
+           Process only if a file was successfully selected and uploaded
+        */
         if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            /* TARGET DIRECTORY - Where uploaded files are stored */
             $uploadDir = 'uploads/notes/';
-            /* Create directory if it doesn't exist */
+            /* CREATE DIRECTORY - If it doesn't exist, create it */
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
-            /* Add timestamp prefix to filename to avoid duplicates */
+            /* 
+               GENERATE UNIQUE FILENAME
+               Reasons:
+               1. Prevent name collisions if multiple uploads have same filename
+               2. Timestamps ensure uniqueness (time() returns seconds since epoch)
+               3. Original name preserved for user reference
+            */
             $fileName = time() . '_' . basename($_FILES['file']['name']);
             $filePath = $uploadDir . $fileName;
 
-            /* Move file from PHP temp location to our uploads folder */
+            /* 
+               MOVE FILE - From PHP temporary location to permanent storage
+               move_uploaded_file() is secure: only works with uploaded files
+               If fails, set error message and skip database insertion
+            */
             if (!move_uploaded_file($_FILES['file']['tmp_name'], $filePath)) {
                 $error = 'Failed to upload file';
             }
         }
 
+        /* 
+           ============================================
+           DATABASE INSERTION - Save note record
+           ============================================
+           Only proceeds if no errors encountered
+        */
         if (empty($error)) {
-            /* INSERT note into database */
+            /* 
+               PREPARED STATEMENT - Prevent SQL injection
+               Safely insert values into database with type binding
+               Columns: title, content, file_path, subject_id, uploaded_by
+            */
             $stmt = $conn->prepare("INSERT INTO notes (title, content, file_path, subject_id, uploaded_by) VALUES (?, ?, ?, ?, ?)");
+            /* 
+               BIND PARAMETERS - Map values to placeholders
+               "sssii" means: string, string, string, integer, integer
+               Corresponding to: title, content, file_path, subjectId, uploadedBy
+            */
             $stmt->bind_param("sssii", $title, $content, $filePath, $subjectId, $uploadedBy);
 
+            /* EXECUTE INSERTION - Save to database */
             if ($stmt->execute()) {
                 $success = 'Note uploaded successfully!';
             } else {
@@ -90,7 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Notes - Education Hub</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/notes.css">
     <link rel="stylesheet" href="assets/css/upload_notes.css">
 </head>
 <body>
@@ -181,96 +222,160 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </main>
     </div>
 
-    <!-- === JavaScript: Year/Semester Filtering + Drag & Drop === -->
+    <!-- ============================================
+         JAVASCRIPT: FORM LOGIC + DRAG & DROP
+         ============================================
+         Handles:
+         1. Year/Semester filtering for subject selector
+         2. Drag-and-drop file upload
+         3. File selection display
+    -->
     <script>
-        /* --- Year/Semester button logic --- */
-        /* When user clicks FY/SY/TY, update semester buttons and filter subjects */
+        /* ============================================
+           YEAR AND SEMESTER FILTER LOGIC
+           ============================================
+           Dynamically show/hide semester buttons based on year
+           Filter subject options by selected year+semester
+        */
+        
+        /* DOM ELEMENT REFERENCES - Cache selectors for performance */
         const yearBtns = document.querySelectorAll('.year-btn');
         const semBtns = document.querySelectorAll('.sem-btn');
         const subjectSelect = document.getElementById('subject_id');
         const options = subjectSelect.querySelectorAll('option');
 
-        /* Map: which semesters belong to each year */
+        /* SEMESTER MAPPING BY YEAR */
+        /* Determines which semesters are available for each academic year */
         const semestersByYear = { 'FY': [1, 2], 'SY': [3, 4], 'TY': [5, 6] };
+        
+        /* DEFAULT SELECTIONS - FY Year, Semester 1 */
         let selectedYear = 'FY';
         let selectedSem = 1;
 
-        /* Update semester buttons when year changes */
+        /* 
+           UPDATE SEMESTER BUTTONS - When year changes, show correct semesters
+           Example: FY shows Sem 1, Sem 2; SY shows Sem 3, Sem 4
+        */
         function updateSemesterButtons() {
+            /* Get the semesters for currently selected year */
             const sems = semestersByYear[selectedYear];
+            
+            /* Update each semester button with correct label and data */
             semBtns.forEach((btn, index) => {
                 btn.textContent = 'Sem ' + sems[index];
                 btn.dataset.sem = sems[index];
             });
+            
+            /* Reset to first semester of new year */
             selectedSem = sems[0];
             semBtns[0].classList.add('active');
             semBtns[1].classList.remove('active');
+            
+            /* Update visible subject options */
             filterSubjects();
         }
 
-        /* Show only subjects matching selected year + semester */
+        /* 
+           FILTER SUBJECT DROPDOWN - Show only subjects for selected year/semester
+           Hide options that don't match the combination
+        */
         function filterSubjects() {
             options.forEach(opt => {
+                /* Always show the placeholder option */
                 if (!opt.value) { opt.style.display = 'block'; return; }
+                
+                /* Show if subject's year and semester match selection */
                 const show = opt.dataset.year === selectedYear && parseInt(opt.dataset.sem) === selectedSem;
                 opt.style.display = show ? 'block' : 'none';
             });
+            
+            /* Clear any previously selected subject */
             subjectSelect.value = '';
         }
 
-        /* Year button click handlers */
+        /* ============================================
+           YEAR BUTTON CLICK HANDLERS
+           ============================================
+           Toggle active state and update filtering
+        */
         yearBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                /* Remove active class from all year buttons */
                 yearBtns.forEach(b => b.classList.remove('active'));
+                /* Add active class to clicked button */
                 btn.classList.add('active');
+                /* Update selected year and refilter */
                 selectedYear = btn.dataset.year;
                 updateSemesterButtons();
             });
         });
 
-        /* Semester button click handlers */
+        /* ============================================
+           SEMESTER BUTTON CLICK HANDLERS
+           ============================================
+        */
         semBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                /* Remove active class from all semester buttons */
                 semBtns.forEach(b => b.classList.remove('active'));
+                /* Add active class to clicked button */
                 btn.classList.add('active');
+                /* Parse semester number and refilter subjects */
                 selectedSem = parseInt(btn.dataset.sem);
                 filterSubjects();
             });
         });
 
-        /* --- Drag & Drop file upload --- */
+        /* ============================================
+           DRAG & DROP FILE UPLOAD
+           ============================================
+           Provides improved UX for file selection
+           Allows drag-and-drop or click-to-browse
+        */
+        
+        /* DOM ELEMENTS FOR FILE UPLOAD */
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('file');
         const selectedFile = document.getElementById('selectedFile');
 
-        /* Click dropzone to open file picker */
+        /* CLICK DROPZONE - Opens file picker dialog */
         dropzone.addEventListener('click', () => fileInput.click());
 
-        /* Drag over: add visual feedback */
-        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        /* DRAG OVER - Add visual feedback when dragging over dropzone */
+        dropzone.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            dropzone.classList.add('dragover'); 
+        });
+
+        /* DRAG LEAVE - Remove visual feedback when leaving dropzone */
         dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
 
-        /* Drop: assign file to input */
+        /* DROP - Handle dropped files */
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropzone.classList.remove('dragover');
+            /* Assign dropped files to input element */
             if (e.dataTransfer.files.length) {
                 fileInput.files = e.dataTransfer.files;
                 showSelectedFile(e.dataTransfer.files[0]);
             }
         });
 
-        /* Show selected filename */
+        /* FILE INPUT CHANGE - Show selected file when user picks via dialog */
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length) showSelectedFile(fileInput.files[0]);
         });
 
+        /* 
+           DISPLAY SELECTED FILE - Show filename to user
+           Gives visual confirmation of selected file before upload
+        */
         function showSelectedFile(file) {
             selectedFile.innerHTML = `<span>📎 ${file.name}</span>`;
             selectedFile.style.display = 'block';
         }
 
-        /* Initial filter on page load */
+        /* INITIALIZE - Filter subjects on page load */
         filterSubjects();
     </script>
 </body>

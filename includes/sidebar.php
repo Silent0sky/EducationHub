@@ -1,141 +1,164 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Sidebar Navigation (includes/sidebar.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Fixed left sidebar with navigation links that change based on user role.
- * 
- * ROLE-BASED LINKS:
- *   ALL ROLES:
- *     - Dashboard, Search Notes, Practice Quiz
- * 
- *   STUDENT ONLY:
- *     - My Performance (own quiz history)
- * 
- *   TEACHER + ADMIN:
- *     - Student Performance (view all students by semester)
- *     - Upload Notes (upload PDFs for students)
- *     - Manage Questions (add quiz questions per subject)
- *     - My Uploads (view notes they uploaded)
- * 
- *   ADMIN ONLY:
- *     - Manage Users (view/edit/delete all users)
- *     - Manage Subjects (add/remove subjects by year/semester)
- * 
- * HOW IT WORKS:
- *   1. Gets current page filename to highlight active link
- *   2. Gets user role from session
- *   3. Calculates base path for links (../  for subdirectory pages)
- *   4. Renders nav links with active class on current page
- * 
- * CSS: Styled in style.css (.sidebar, .nav-link, .nav-link.active)
- * ============================================================
- */
+/* 
+   ============================================
+   SIDEBAR NAVIGATION - includes/sidebar.php
+   ============================================
+   Renders role-based navigation sidebar with:
+   1. Different nav links for Student, Teacher, Admin roles
+   2. Active page highlighting for current location
+   3. Dynamic path calculation based on directory depth
+   4. Role-specific menu items and destinations
+*/
 
-/* Get current page name for active link highlighting */
+/* GET CURRENT PAGE NAME - For active link visual highlighting */
+/* Uses PHP_SELF to get the currently executing script */
 $currentPage = basename($_SERVER['PHP_SELF']);
 
-/* Get user role from session (defaults to student) */
+/* GET USER ROLE FROM SESSION - Set during login authentication */
+/* Defaults to 'student' if not in session (fallback safety) */
+/* Role determines which navigation items are displayed */
 $role = $_SESSION['user_role'] ?? 'student';
 
-/* Calculate base path: pages in admin/ or auth/ need '../' prefix */
+/* 
+   CALCULATE BASE PATH - Adjusts relative URLs based on directory depth
+   Different files are in different directories:
+   - Root files: /dashboard.php, /quiz.php, /search_notes.php
+   - Auth files: /auth/login.php, /auth/register.php
+   - Admin files: /admin/dashboard.php, /admin/users.php
+   So sidebar needs '../' to go back to root from nested directories
+*/
 $basePath = '';
 if (strpos($_SERVER['PHP_SELF'], '/admin/') !== false ||
     strpos($_SERVER['PHP_SELF'], '/auth/') !== false ||
     strpos($_SERVER['PHP_SELF'], '/includes/') !== false) {
+    /* Current file is in subdirectory - use '../' to reach root */
     $basePath = '../';
 }
 ?>
 
-<!-- Sidebar: Fixed left navigation panel with gradient background -->
+<!-- SIDEBAR CONTAINER - Fixed left navigation panel with gradient background -->
 <aside class="sidebar">
 
-    <!-- === Logo Section === -->
+    <!-- ============================================
+         LOGO SECTION - Application branding and role indicator
+         ============================================ -->
     <div class="sidebar-logo">
+        <!-- APPLICATION ICON AND NAME -->
         <span class="logo-icon">📚</span>
         <h2>Education Hub</h2>
-        <!-- Role badge: shows which role is currently logged in -->
+        <!-- ROLE BADGE - Display current user's role for visual confirmation -->
+        <!-- Shows which role is currently logged in (Student/Teacher/Admin) -->
         <small style="color: var(--text-muted); font-size: 11px; display: block; margin-top: 4px;">
             <?= ucfirst($role) ?> Panel
         </small>
     </div>
 
-    <!-- === Navigation Links === -->
+    <!-- ============================================
+         MAIN NAVIGATION MENU - Links based on user role
+         ============================================ -->
     <nav class="sidebar-nav">
 
-        <!-- Dashboard link (all roles) -->
-        <!-- Admin goes to admin/dashboard.php, others go to dashboard.php -->
+        <!-- ============================================
+             DASHBOARD LINK - Available to all roles
+             ============================================ -->
+        <!-- Admin dashboard is in admin/ folder while others are in root -->
+        <!-- This handles the different destinations for each role type -->
         <a href="<?= $role === 'admin' ? $basePath . 'admin/dashboard.php' : $basePath . 'dashboard.php' ?>"
            class="nav-link <?= $currentPage === 'dashboard.php' ? 'active' : '' ?>">
             <span class="icon">🏠</span>
             <span>Dashboard</span>
         </a>
 
-        <!-- Search Notes (students & teachers can search/download notes) -->
+        <!-- ============================================
+             SEARCH NOTES LINK - Available to all roles
+             ============================================ -->
+        <!-- Allows students to search and download notes -->
+        <!-- Allows teachers to search notes from other teachers -->
         <a href="<?= $basePath ?>search_notes.php" class="nav-link <?= $currentPage === 'search_notes.php' ? 'active' : '' ?>">
             <span class="icon">🔍</span>
             <span>Search Notes</span>
         </a>
 
-        <!-- Practice Quiz (all roles can take quizzes) -->
+        <!-- ============================================
+             PRACTICE QUIZ LINK - Available to all roles
+             ============================================ -->
+        <!-- Students take quizzes and get scores -->
+        <!-- Teachers can view their created quizzes -->
+        <!-- Admins can manage the quiz system -->
         <a href="<?= $basePath ?>quiz.php" class="nav-link <?= $currentPage === 'quiz.php' ? 'active' : '' ?>">
             <span class="icon">🎯</span>
             <span>Practice Quiz</span>
         </a>
 
-        <!-- Performance link: different destination based on role -->
-        <!-- Students → own performance, Teachers/Admins → all students -->
+        <!-- ============================================
+             PERFORMANCE ANALYTICS - Different views per role
+             ============================================ -->
+        <!-- Students see their own performance --> 
+        <!-- Teachers/Admins see all student performance data -->
         <a href="<?= ($role === 'teacher' || $role === 'admin') ? $basePath . 'teacher_performance.php' : $basePath . 'performance.php' ?>"
            class="nav-link <?= ($currentPage === 'performance.php' || $currentPage === 'teacher_performance.php') ? 'active' : '' ?>">
             <span class="icon">📊</span>
             <span><?= ($role === 'teacher' || $role === 'admin') ? 'Student Performance' : 'My Performance' ?></span>
         </a>
 
-        <!-- ===== Teacher & Admin only links ===== -->
+        <!-- ============================================
+             TEACHER & ADMIN ONLY LINKS
+             ============================================ -->
         <?php if ($role === 'teacher' || $role === 'admin'): ?>
 
-        <!-- Upload Notes: teachers upload PDF study materials -->
-        <a href="<?= $basePath ?>upload_notes.php" class="nav-link <?= $currentPage === 'upload_notes.php' ? 'active' : '' ?>">
-            <span class="icon">📤</span>
-            <span>Upload Notes</span>
-        </a>
+            <!-- UPLOAD NOTES LINK - Teachers upload PDF study materials -->
+            <!-- Allows content creators to share course materials with students -->
+            <a href="<?= $basePath ?>upload_notes.php" class="nav-link <?= $currentPage === 'upload_notes.php' ? 'active' : '' ?>">
+                <span class="icon">📤</span>
+                <span>Upload Notes</span>
+            </a>
 
-        <!-- Manage Questions: add/edit quiz questions per subject -->
-        <a href="<?= $basePath ?>manage_questions.php" class="nav-link <?= $currentPage === 'manage_questions.php' ? 'active' : '' ?>">
-            <span class="icon">➕</span>
-            <span>Manage Questions</span>
-        </a>
+            <!-- MANAGE QUESTIONS LINK - Add/edit quiz questions per subject -->
+            <!-- Teachers create questions, Admins can manage all questions -->
+            <a href="<?= $basePath ?>manage_questions.php" class="nav-link <?= $currentPage === 'manage_questions.php' ? 'active' : '' ?>">
+                <span class="icon">➕</span>
+                <span>Manage Questions</span>
+            </a>
 
-        <!-- My Uploads: view notes the teacher has uploaded -->
-        <a href="<?= $basePath ?>my_uploads.php" class="nav-link <?= $currentPage === 'my_uploads.php' ? 'active' : '' ?>">
-            <span class="icon">📄</span>
-            <span>My Uploads</span>
-        </a>
+            <!-- MY UPLOADS LINK - Teacher's previously uploaded notes -->
+            <!-- View, update, or delete notes the teacher has shared -->
+            <a href="<?= $basePath ?>my_uploads.php" class="nav-link <?= $currentPage === 'my_uploads.php' ? 'active' : '' ?>">
+                <span class="icon">📄</span>
+                <span>My Uploads</span>
+            </a>
 
         <?php endif; ?>
 
-        <!-- ===== Admin only links ===== -->
+        <!-- ============================================
+             ADMIN ONLY LINKS
+             ============================================ -->
         <?php if ($role === 'admin'): ?>
 
-        <!-- Manage Users: view/edit all registered users -->
-        <a href="<?= $basePath ?>admin/users.php" class="nav-link <?= $currentPage === 'users.php' ? 'active' : '' ?>">
-            <span class="icon">👥</span>
-            <span>Manage Users</span>
-        </a>
+            <!-- MANAGE USERS LINK - System-wide user management -->
+            <!-- View all registered users (students, teachers, admins) -->
+            <!-- Edit user details, reset passwords, deactivate accounts -->
+            <a href="<?= $basePath ?>admin/users.php" class="nav-link <?= $currentPage === 'users.php' ? 'active' : '' ?>">
+                <span class="icon">👥</span>
+                <span>Manage Users</span>
+            </a>
 
-        <!-- Manage Subjects: add/edit subjects by year/semester -->
-        <a href="<?= $basePath ?>admin/subjects.php" class="nav-link <?= $currentPage === 'subjects.php' ? 'active' : '' ?>">
-            <span class="icon">📚</span>
-            <span>Manage Subjects</span>
-        </a>
+            <!-- MANAGE SUBJECTS LINK - Course curriculum management -->
+            <!-- Add new subjects organized by year and semester -->
+            <!-- Edit existing subject details, assign to departments -->
+            <a href="<?= $basePath ?>admin/subjects.php" class="nav-link <?= $currentPage === 'subjects.php' ? 'active' : '' ?>">
+                <span class="icon">📚</span>
+                <span>Manage Subjects</span>
+            </a>
 
         <?php endif; ?>
     </nav>
 
-    <!-- === Logout Button === -->
+    <!-- ============================================
+         SIDEBAR FOOTER - Logout action
+         ============================================ -->
     <div class="sidebar-footer">
+        <!-- LOGOUT LINK - Available to all authenticated users -->
+        <!-- Destroys session and returns to login page -->
         <a href="<?= $basePath ?>auth/logout.php" class="nav-link">
             <span class="icon">🚪</span>
             <span>Logout</span>

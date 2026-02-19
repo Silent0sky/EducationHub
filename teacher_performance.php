@@ -1,40 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Teacher Performance View (teacher_performance.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Shows teachers/admins a table of ALL students and their quiz performance.
- *   Includes a semester dropdown to filter students by semester.
- * 
- * ACCESS: Teachers and Admins only
- * 
- * HOW IT WORKS:
- *   1. Gets semester filter from URL (?semester=2)
- *   2. Builds SQL query joining users → quiz_results → subjects
- *   3. Groups by user to calculate: total quizzes, avg accuracy
- *   4. If semester filter is applied, only shows results for that semester
- *   5. Displays summary stats (total students, avg accuracy, top performers)
- *   6. Shows student table with color-coded status badges
- * 
- * SQL LOGIC:
- *   SELECT u.name, COUNT(qr.id), AVG(qr.percentage)
- *   FROM users u
- *   LEFT JOIN quiz_results qr ON u.id = qr.user_id
- *   LEFT JOIN subjects s ON qr.subject_id = s.id
- *   WHERE u.role = 'student' AND s.semester = [filter]
- *   GROUP BY u.id
- * 
- * STATUS BADGES:
- *   >= 80% → ✓ Excellent (green)
- *   >= 60% → Good (blue)
- *   >= 40% → Average (orange)
- *   < 40%  → Needs Work (red)
- * 
- * CSS: assets/css/style.css (card, table, stats-grid)
- * ============================================================
- */
+/* Teacher view of student performance - analytics and progress tracking */
 
 require_once 'config/functions.php';
 requireLogin();
@@ -97,7 +62,9 @@ $avgAccuracy = $totalStudents > 0 ? round($totalAccuracy / $totalStudents, 1) : 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Performance - Education Hub</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/performance.css">
 </head>
 <body>
     <div class="layout">
@@ -108,21 +75,21 @@ $avgAccuracy = $totalStudents > 0 ? round($totalAccuracy / $totalStudents, 1) : 
 
             <section>
                 <!-- === Summary Stats Cards === -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-value"><?= $totalStudents ?></div>
-                        <div class="stat-label">Total Students</div>
+                <div class="stats-grid grid">
+                    <div class="stat-card tile">
+                        <div class="stat-icon icon">👥</div>
+                        <div class="stat-value value"><?= $totalStudents ?></div>
+                        <div class="stat-label label">Total Students</div>
                     </div>
-                    <div class="stat-card success">
-                        <div class="stat-icon">🎯</div>
-                        <div class="stat-value"><?= $avgAccuracy ?>%</div>
-                        <div class="stat-label">Avg Accuracy</div>
+                    <div class="stat-card success tile">
+                        <div class="stat-icon icon">🎯</div>
+                        <div class="stat-value value"><?= $avgAccuracy ?>%</div>
+                        <div class="stat-label label">Avg Accuracy</div>
                     </div>
-                    <div class="stat-card warning">
-                        <div class="stat-icon">🌟</div>
-                        <div class="stat-value"><?= $excellentCount ?></div>
-                        <div class="stat-label">Top Performers</div>
+                    <div class="stat-card warning tile">
+                        <div class="stat-icon icon">🌟</div>
+                        <div class="stat-value value"><?= $excellentCount ?></div>
+                        <div class="stat-label label">Top Performers</div>
                     </div>
                 </div>
 

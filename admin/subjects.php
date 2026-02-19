@@ -1,26 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Manage Subjects (admin/subjects.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Admin can add new subjects and delete existing ones.
- *   Subjects are organized by Year (FY/SY/TY) and Semester (1-6).
- * 
- * HOW IT WORKS:
- *   1. DELETE: ?delete=5 → deletes subject with ID 5 (cascades notes/questions)
- *   2. ADD: POST with name, description, year, semester, color
- *      → INSERTs into subjects table
- *   3. Lists all subjects with notes/questions counts
- * 
- * CASCADE DELETE:
- *   When a subject is deleted, all related notes and questions
- *   are also deleted (ON DELETE CASCADE in SQL schema).
- * 
- * CSS: ../assets/css/style.css (card, form-group, table)
- * ============================================================
- */
+/* Manage subjects - add, list and delete subjects (admin only) */
 
 require_once '../config/functions.php';
 requireAdmin();
@@ -74,7 +53,9 @@ $subjects = $conn->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Subjects - Education Hub</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body>
     <div class="layout">

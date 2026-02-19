@@ -1,24 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - My Uploads (my_uploads.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Shows teachers a list of all notes THEY have uploaded.
- *   Displays title, subject, downloads count, and upload date.
- * 
- * ACCESS: Teachers and Admins only (requireTeacher)
- * 
- * HOW IT WORKS:
- *   1. requireTeacher() ensures only teachers/admins access this page
- *   2. Queries notes table WHERE uploaded_by = current user's ID
- *   3. JOINs with subjects table to show subject name and color
- *   4. Displays notes in a card-based list with download stats
- * 
- * CSS: assets/css/style.css (card, table, note-card classes)
- * ============================================================
- */
+/* Teacher's notes management - view and manage uploaded study materials */
 
 require_once 'config/functions.php';
 requireTeacher(); // Only teachers and admins
@@ -41,7 +22,9 @@ $myNotes = $conn->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Uploads - Education Hub</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/notes.css">
 </head>
 <body>
     <div class="layout">

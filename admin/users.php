@@ -1,25 +1,5 @@
 <?php
-/**
- * ============================================================
- * Education Hub - Manage Users (admin/users.php)
- * ============================================================
- * 
- * PURPOSE:
- *   Admin can view, edit roles, and delete users.
- * 
- * HOW IT WORKS:
- *   1. DELETE: ?delete=5 → deletes user with ID 5 (prevents self-delete)
- *   2. ROLE CHANGE: POST with user_id + new_role → updates role in DB
- *   3. Lists all users with role dropdowns and delete buttons
- * 
- * SECURITY:
- *   - requireAdmin() blocks non-admin users
- *   - Cannot delete your own account
- *   - Role dropdown disabled for current admin user
- * 
- * CSS: ../assets/css/style.css (card, table)
- * ============================================================
- */
+/* Manage users - view, change roles, and delete users (admin only) */
 
 require_once '../config/functions.php';
 requireAdmin();
@@ -62,7 +42,9 @@ $users = $conn->query("SELECT * FROM users ORDER BY created_at DESC");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users - Education Hub</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body>
     <div class="layout">

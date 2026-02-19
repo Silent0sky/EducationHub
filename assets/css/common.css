@@ -1,0 +1,270 @@
+/* 
+   Common UI Components - Buttons, Forms, Cards, Tables
+   Reusable styles used throughout all pages and all user roles
+*/
+
+/* ========== BUTTONS ========== */
+
+/* BUTTON BASE - Common button styles (padding, border, rounded corners, cursor) */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    line-height: 1.4;
+}
+
+/* PRIMARY BUTTON - Blue gradient button (main actions like Save, Submit, Login) */
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+/* PRIMARY BUTTON HOVER - Primary button with shadow effect on hover */
+.btn-primary:hover {
+    box-shadow: var(--shadow-primary);
+}
+
+/* SECONDARY BUTTON - White button with border (alternative/cancel actions) */
+.btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+}
+
+/* SECONDARY BUTTON HOVER - Secondary button highlight on hover */
+.btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-lighter);
+}
+
+/* SUCCESS BUTTON - Green button (successful actions, confirm, yes) */
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+/* SUCCESS BUTTON HOVER - Green button slightly transparent on hover */
+.btn-success:hover {
+    opacity: 0.9;
+}
+
+/* DANGER BUTTON - Red button (delete, remove, cancel, dangerous actions) */
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+/* DANGER BUTTON HOVER - Red button slightly transparent on hover */
+.btn-danger:hover {
+    opacity: 0.9;
+}
+
+/* FULL WIDTH BUTTON - Stretch button to fill 100% of container width */
+.btn-block { width: 100%; }
+
+/* SMALL BUTTON - Compact button for secondary actions or list items */
+.btn-sm { padding: 8px 16px; font-size: 12px; }
+
+/* ========== FORMS ========== */
+
+/* FORM GROUP - Container wrapper for single form field (label + input) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+/* FORM LABEL - Text label above input fields */
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* FORM INPUT/SELECT/TEXTAREA - All text input elements styling */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-light);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+/* FORM INPUT FOCUS STATE - Highlight input border and background when focused */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--surface);
+}
+
+/* INPUT PLACEHOLDER TEXT - Gray text showing example/hint in empty inputs */
+.form-group input::placeholder { color: var(--text-light); }
+
+/* ========== CARDS ========== */
+
+/* CARD WRAPPER - Container for content with rounded corners and shadow */
+.card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.3s ease;
+}
+
+/* CARD HOVER STATE - Subtle shadow increase on card hover for interactivity */
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* CARD HEADER - Top section of card with title and action buttons */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+/* CARD TITLE - Heading text within card header */
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* ========== TABLES ========== */
+
+/* TABLE CONTAINER - Wrapper for responsive table with horizontal scroll on mobile */
+.table-container {
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+}
+
+/* TABLE ELEMENT - Base table styling with full width */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* TABLE HEADER & DATA CELLS - Padding and border for all table cells */
+th, td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+/* TABLE HEADER CELLS - Bold, uppercase labels for table columns */
+th {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--primary-lighter);
+}
+
+td {
+    font-size: 14px;
+    color: var(--text);
+}
+
+tr:hover {
+    background: var(--primary-lighter);
+}
+
+/* Alerts */
+.alert {
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: var(--success-light);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+
+.alert-error {
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+
+.alert-warning {
+    background: var(--warning-light);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.badge-success {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.badge-danger {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.badge-warning {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 14px;
+}

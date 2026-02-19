@@ -1,39 +1,9 @@
-/**
- * ============================================================
- * Education Hub - Search Notes Stylesheet (search_notes.css)
- * ============================================================
- * 
- * FILE NAVIGATION:
- *   LOADED BY: search_notes.php (via <link rel="stylesheet">)
- *   DEPENDS ON: style.css (CSS variables, base styles)
- *   ALSO USES: quiz.css year-tab/semester-tab styles (shared classes)
- *
- * BACKEND FLOW (search_notes.php):
- *   1. Reads filters from URL: ?year=FY&semester=1&subject=5&search=PHP
- *   2. Builds dynamic SQL: SELECT n.*, s.name, u.name FROM notes n 
- *      JOIN subjects s ON n.subject_id = s.id 
- *      JOIN users u ON n.uploaded_by = u.id 
- *      WHERE conditions based on filters
- *   3. Renders year tabs → semester tabs → search bar → note cards
- *   4. Download button links to download_notes.php?id=X
- *
- * DATABASE TABLES:
- *   - notes (id, title, content, file_path, subject_id, uploaded_by, downloads)
- *   - subjects (id, name, color, year, semester)
- *   - users (id, name) — for uploader info
- *
- * NAVIGATION FROM THIS PAGE:
- *   → download_notes.php?id=X (file download handler)
- *   → Sidebar links (all pages)
- *
- * COLOR SCHEME: Royal Blue + Sky Blue (inherits from style.css)
- * ============================================================
- */
+/* 
+   Search Notes Page - Student/Teacher Note Discovery
+   Styles for search_notes.php with search bar, filters, and note cards
+*/
 
-
-/* ===========================================================
-   HERO SECTION — Page title with gradient bg
-   =========================================================== */
+/* NOTES HERO BANNER - Top section with title and description */
 .notes-hero {
     text-align: center;
     padding: 36px 24px;
@@ -43,22 +13,18 @@
     border: 1px solid var(--border);
 }
 
+/* NOTES HERO TITLE - Large heading "Search Notes" */
 .notes-hero h1 {
     font-size: 28px;
     font-weight: 800;
     margin-bottom: 6px;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
 }
 
+/* NOTES HERO SUBTITLE - Description text under heading */
 .notes-hero p { color: var(--text-muted); font-size: 15px; }
 
-
-/* ===========================================================
-   SEARCH BAR — Input + subject dropdown + search button
-   White container with subtle shadow, wraps on mobile
-   =========================================================== */
+/* MODERN SEARCH BAR - Container for search input, subject dropdown, and search button */
 .modern-search {
     display: flex;
     gap: 12px;
@@ -72,14 +38,14 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* Search input wrapper: holds icon + text input */
+/* SEARCH INPUT WRAPPER - Container for search icon and text input field */
 .search-input-wrapper {
     flex: 1;
     min-width: 250px;
     position: relative;
 }
 
-/* Search emoji icon positioned inside input */
+/* SEARCH ICON - Magnifying glass emoji positioned inside search input */
 .search-input-wrapper .search-icon {
     position: absolute;
     left: 16px; top: 50%;
@@ -87,7 +53,7 @@
     font-size: 18px;
 }
 
-/* Text input: left-padded for icon space */
+/* SEARCH INPUT FIELD - Text input for searching notes by keyword/title */
 .modern-search .search-input {
     width: 100%;
     padding: 12px 14px 12px 46px;
@@ -100,13 +66,14 @@
     transition: var(--transition);
 }
 
+/* SEARCH INPUT FOCUS STATE - Highlight input on focus with blue border and shadow */
 .modern-search .search-input:focus {
     border-color: var(--primary);
     outline: none;
     box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
 }
 
-/* Subject dropdown */
+/* SUBJECT FILTER DROPDOWN - Select dropdown to filter notes by subject */
 .modern-select {
     padding: 12px 18px;
     border: 2px solid var(--border);
@@ -120,15 +87,13 @@
     transition: var(--transition);
 }
 
+/* SUBJECT FILTER FOCUS STATE - Highlight dropdown on focus */
 .modern-select:focus { border-color: var(--primary); outline: none; }
 
+/* SEARCH BUTTON - Submit button for search query */
 .btn-search { padding: 12px 24px; font-weight: 600; }
 
-
-/* ===========================================================
-   NOTE CARDS — Grid of downloadable notes
-   Each card: subject badge, title, uploader, date, download btn
-   =========================================================== */
+/* NOTES GRID - Responsive grid for displaying search results */
 .notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -141,12 +106,11 @@
     padding: 22px;
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
-    transition: var(--transition);
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
-/* Top accent stripe (appears on hover) */
 .modern-card::before {
     content: '';
     position: absolute;
@@ -158,7 +122,6 @@
 }
 
 .modern-card:hover {
-    transform: translateY(-4px);
     box-shadow: var(--shadow-md);
 }
 .modern-card:hover::before { opacity: 1; }
@@ -198,14 +161,12 @@
 
 .note-content { color: var(--text-muted); font-size: 14px; margin-bottom: 14px; line-height: 1.5; }
 
-/* Download button */
 .btn-download {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 10px 18px; border-radius: var(--radius-sm);
-    font-weight: 600; transition: var(--transition);
+    font-weight: 600; transition: all 0.3s ease;
 }
 .btn-download:hover {
-    transform: translateY(-2px);
     box-shadow: var(--shadow-primary);
 }
 
