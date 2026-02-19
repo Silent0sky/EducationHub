@@ -30,7 +30,8 @@ $role = $_SESSION['user_role'] ?? 'student';
 $basePath = '';
 if (strpos($_SERVER['PHP_SELF'], '/admin/') !== false ||
     strpos($_SERVER['PHP_SELF'], '/auth/') !== false ||
-    strpos($_SERVER['PHP_SELF'], '/includes/') !== false) {
+    strpos($_SERVER['PHP_SELF'], '/includes/') !== false ||
+    strpos($_SERVER['PHP_SELF'], '/dashboards/') !== false) {
     /* Current file is in subdirectory - use '../' to reach root */
     $basePath = '../';
 }
@@ -63,15 +64,11 @@ if (strpos($_SERVER['PHP_SELF'], '/admin/') !== false ||
              ============================================ -->
         <!-- Admin dashboard is in admin/ folder while others are in root -->
         <!-- This handles the different destinations for each role type -->
-        <a href="<?= $role === 'admin' ? $basePath . 'admin/dashboard.php' : $basePath . 'dashboard.php' ?>"
-           class="nav-link <?= $currentPage === 'dashboard.php' ? 'active' : '' ?>">
+          <a href="<?= $role === 'admin' ? $basePath . 'dashboards/admin/dashboard.php' : $basePath . 'dashboard.php' ?>"
+              class="nav-link <?= in_array($currentPage, ['dashboard.php','student_dashboard.php','teacher_dashboard.php']) ? 'active' : '' ?>">
             <span class="icon">🏠</span>
             <span>Dashboard</span>
         </a>
-
-        <!-- ============================================
-             SEARCH NOTES LINK - Available to all roles
-             ============================================ -->
         <!-- Allows students to search and download notes -->
         <!-- Allows teachers to search notes from other teachers -->
         <a href="<?= $basePath ?>search_notes.php" class="nav-link <?= $currentPage === 'search_notes.php' ? 'active' : '' ?>">

@@ -24,14 +24,14 @@ if (!$role) {
 }
 
 if ($role === 'student') {
-    /* Student dashboard */
-    require 'student_dashboard.php';
+    /* Student dashboard (moved) */
+    require 'dashboards/student_dashboard.php';
 } elseif ($role === 'teacher') {
-    /* Teacher dashboard */
-    require 'teacher_dashboard.php';
+    /* Teacher dashboard (moved) */
+    require 'dashboards/teacher_dashboard.php';
 } elseif ($role === 'admin') {
-    /* Admin dashboard in separate folder */
-    require 'admin/dashboard.php';
+    /* Admin dashboard (moved to dashboards/admin/) */
+    require 'dashboards/admin/dashboard.php';
 } else {
     /* Fallback - Unknown role, redirect to login */
     redirect('auth/login.php');

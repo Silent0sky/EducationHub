@@ -26,6 +26,13 @@ if (!$note) {
 /* Increment download counter */
 $conn->query("UPDATE notes SET downloads = downloads + 1 WHERE id = $noteId");
 
+/* Record download in history */
+$userId = $_SESSION['user_id'];
+$historyStmt = $conn->prepare("INSERT INTO download_history (user_id, note_id, downloaded_at) VALUES (?, ?, NOW())");
+$historyStmt->bind_param("ii", $userId, $noteId);
+$historyStmt->execute();
+$historyStmt->close();
+
 /* Serve the file for download */
 if ($note['file_path'] && file_exists($note['file_path'])) {
     /* Physical file exists → serve it directly */
