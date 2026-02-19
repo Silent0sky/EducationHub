@@ -33,16 +33,51 @@ $stats = getUserStats($_SESSION['user_id']);
 /* FETCH ALL SUBJECTS - Query all subjects ordered by year and semester for subject grid */
 $subjects = $conn->query("SELECT * FROM subjects ORDER BY year, semester, name");
 
-/* FETCH RECENT QUIZ ATTEMPTS - Get student's last 5 quiz attempts for quick reference */
-$recentQuizzes = $conn->query("
-    SELECT q.id, q.name, s.name as subject_name, qr.score, qr.total_questions, qr.attempt_date
-    FROM quiz_results qr
-    JOIN quizzes q ON qr.quiz_id = q.id
-    JOIN subjects s ON q.subject_id = s.id
-    WHERE qr.student_id = {$_SESSION['user_id']}
-    ORDER BY qr.attempt_date DESC
-    LIMIT 5
-");
+/* FETCH RECENT QUIZ ATTEMPTS - Get student's last 5 quiz attempts for quick reference (placeholder; actual query below) */
+/* FETCH RECENT QUIZ ATTEMPTS - Get student's last 5 quiz attempts for quick reference
+   NOTE: Not all installations include a separate `quizzes` table. We gracefully
+   handle the absence of the table by falling back to reading from `quiz_results`.
+*/
+$recentQuizzes = null; // Placeholder - actual query is determined after checking for `quizzes` table
+$check = $conn->query("SHOW TABLES LIKE 'quizzes'");
+if ($check && $check->num_rows > 0) {
+    /* Normal case: quizzes table exists */
+    $colCheck = $conn->query("SHOW COLUMNS FROM quiz_results LIKE 'quiz_id'");
+    if ($colCheck && $colCheck->num_rows > 0) {
+        /* quiz_results records reference quizzes via quiz_id */
+        $recentQuizzes = $conn->query(
+            "SELECT q.id, q.title AS name, s.name as subject_name, qr.score, qr.total_questions, qr.taken_at AS attempt_date
+             FROM quiz_results qr
+             JOIN quizzes q ON qr.quiz_id = q.id
+             JOIN subjects s ON q.subject_id = s.id
+             WHERE qr.user_id = {$_SESSION['user_id']}
+             ORDER BY qr.taken_at DESC
+             LIMIT 5"
+        );
+    } else {
+        /* quizzes table exists but quiz_results has no quiz_id column — fall back to using qr.id */
+        $recentQuizzes = $conn->query(
+            "SELECT qr.id AS id, CONCAT('Quiz #', qr.id) AS name, COALESCE(s.name, 'General') AS subject_name,
+                    qr.score, qr.total_questions, qr.taken_at AS attempt_date
+             FROM quiz_results qr
+             LEFT JOIN subjects s ON qr.subject_id = s.id
+             WHERE qr.user_id = {$_SESSION['user_id']}
+             ORDER BY qr.taken_at DESC
+             LIMIT 5"
+        );
+    }
+} else {
+    /* Fallback: quizzes table missing — use quiz_results and subject_id if present */
+    $recentQuizzes = $conn->query(
+        "SELECT qr.id AS id, CONCAT('Quiz #', qr.id) AS name,
+                COALESCE(s.name, 'General') AS subject_name, qr.score, qr.total_questions, qr.taken_at AS attempt_date
+         FROM quiz_results qr
+         LEFT JOIN subjects s ON qr.subject_id = s.id
+         WHERE qr.user_id = {$_SESSION['user_id']}
+         ORDER BY qr.taken_at DESC
+         LIMIT 5"
+    );
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -16,7 +16,12 @@ require_once 'config/functions.php';
 requireLogin();
 
 /* ROLE-BASED REDIRECT - Send user to appropriate dashboard */
-$role = $_SESSION['user_role'];
+/* Safely read role from session and fallback to redirect if missing */
+$role = $_SESSION['user_role'] ?? null;
+if (!$role) {
+    /* Missing role in session — send to login to re-authenticate */
+    redirect('auth/login.php');
+}
 
 if ($role === 'student') {
     /* Student dashboard */

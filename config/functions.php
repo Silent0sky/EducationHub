@@ -37,7 +37,7 @@ function isLoggedIn() {
 */
 function hasRole($role) {
     if (!isLoggedIn()) return false;
-    return $_SESSION['user_role'] === $role;
+    return (isset($_SESSION['user_role']) && $_SESSION['user_role'] === $role);
 }
 
 /* ============================================
@@ -299,7 +299,7 @@ function getUserStats($userId) {
     /* ============================================
        COUNT NOTES - Varies by user role
        ============================================ */
-    $role = $_SESSION['user_role'];
+    $role = $_SESSION['user_role'] ?? 'student';
     if ($role === 'teacher' || $role === 'admin') {
         /* Teachers/Admins see notes they uploaded */
         $result = $conn->query("SELECT COUNT(*) as count FROM notes WHERE uploaded_by = $userId");

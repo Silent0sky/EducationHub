@@ -38,37 +38,49 @@ $questionsResult = $conn->query("SELECT COUNT(*) as total FROM questions WHERE c
 $questionsData = $questionsResult->fetch_assoc();
 $totalQuestionsCreated = $questionsData['total'];
 
-/* FETCH QUIZZES CREATED - Count of quizzes created by this teacher */
-$quizzesResult = $conn->query("SELECT COUNT(*) as total FROM quizzes WHERE created_by = {$_SESSION['user_id']}");
-$quizzesData = $quizzesResult->fetch_assoc();
-$totalQuizzesCreated = $quizzesData['total'];
+/* CHECK FOR QUIZZES TABLE - Not all DBs have a separate quizzes table */
+$totalQuizzesCreated = 0;
+$classAverage = 0;
+$totalAttempts = 0;
+$checkQuizzes = $conn->query("SHOW TABLES LIKE 'quizzes'");
+if ($checkQuizzes && $checkQuizzes->num_rows > 0) {
+    /* FETCH QUIZZES CREATED - Count of quizzes created by this teacher */
+    $quizzesResult = $conn->query("SELECT COUNT(*) as total FROM quizzes WHERE created_by = {$_SESSION['user_id']}");
+    $quizzesData = $quizzesResult->fetch_assoc();
+    $totalQuizzesCreated = $quizzesData['total'];
 
-/* FETCH CLASS PERFORMANCE DATA - Average scores across all student attempts */
-$performanceResult = $conn->query("
-    SELECT AVG(qr.score / q.total_questions * 100) as average_score
-    FROM quiz_results qr
-    JOIN quizzes q ON qr.quiz_id = q.id
-    WHERE q.created_by = {$_SESSION['user_id']}
-");
-$performanceData = $performanceResult->fetch_assoc();
-$classAverage = $performanceData['average_score'] ? round($performanceData['average_score']) : 0;
+    /* FETCH CLASS PERFORMANCE DATA - Average scores across all student attempts */
+    $performanceResult = $conn->query(
+        "SELECT AVG(qr.score / q.total_questions * 100) as average_score
+         FROM quiz_results qr
+         JOIN quizzes q ON qr.quiz_id = q.id
+         WHERE q.created_by = {$_SESSION['user_id']}"
+    );
+    $performanceData = $performanceResult->fetch_assoc();
+    $classAverage = $performanceData['average_score'] ? round($performanceData['average_score']) : 0;
 
-/* FETCH TOTAL STUDENT ATTEMPTS - Count of quiz attempts by all students on teacher's quizzes */
-$attemptsResult = $conn->query("
-    SELECT COUNT(*) as total
-    FROM quiz_results qr
-    JOIN quizzes q ON qr.quiz_id = q.id
-    WHERE q.created_by = {$_SESSION['user_id']}
-");
-$attemptsData = $attemptsResult->fetch_assoc();
-$totalAttempts = $attemptsData['total'];
+    /* FETCH TOTAL STUDENT ATTEMPTS - Count of quiz attempts by all students on teacher's quizzes */
+    $attemptsResult = $conn->query(
+        "SELECT COUNT(*) as total
+         FROM quiz_results qr
+         JOIN quizzes q ON qr.quiz_id = q.id
+         WHERE q.created_by = {$_SESSION['user_id']}"
+    );
+    $attemptsData = $attemptsResult->fetch_assoc();
+    $totalAttempts = $attemptsData['total'];
+}
 
-/* FETCH SUBJECTS TAUGHT - Get list of subjects this teacher teaches/manages */
-$subjects = $conn->query("SELECT DISTINCT s.* FROM subjects s WHERE EXISTS (
-    SELECT 1 FROM notes n WHERE n.subject_id = s.id AND n.uploaded_by = {$_SESSION['user_id']}
-    UNION
-    SELECT 1 FROM quizzes q WHERE q.subject_id = s.id AND q.created_by = {$_SESSION['user_id']}
-) ORDER BY s.year, s.semester, s.name");
+/* FETCH SUBJECTS TAUGHT - Get list of subjects this teacher teaches/manages
+   If `quizzes` table exists, include subjects referenced by quizzes; otherwise
+   only consider subjects from uploaded notes.
+*/
+$subjectsQuery = "SELECT DISTINCT s.* FROM subjects s WHERE EXISTS (
+    SELECT 1 FROM notes n WHERE n.subject_id = s.id AND n.uploaded_by = {$_SESSION['user_id']}";
+if ($checkQuizzes && $checkQuizzes->num_rows > 0) {
+    $subjectsQuery .= "\n    UNION\n    SELECT 1 FROM quizzes q WHERE q.subject_id = s.id AND q.created_by = {$_SESSION['user_id']}";
+}
+$subjectsQuery .= "\n) ORDER BY s.year, s.semester, s.name";
+$subjects = $conn->query($subjectsQuery);
 
 /* FETCH RECENT UPLOADS - Get teacher's latest 5 uploaded notes */
 $recentUploads = $conn->query("
