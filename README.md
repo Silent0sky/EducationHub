@@ -1,3 +1,129 @@
+# Education Hub (PHP)
+
+A lightweight education platform for sharing notes, taking quizzes, and tracking student performance. Built with plain PHP + MySQL (designed for XAMPP/LAMP local development).
+
+## Overview
+
+- Multi-role: Student, Teacher, Admin with role-separated dashboards and CSS.
+- Features: upload and search notes, take quizzes, view performance, manage users (admin), manage questions (teacher).
+- Minimal dependencies: PHP 8+, MySQL, Apache (XAMPP recommended for local use).
+
+## Key Files & Folders
+
+- `index.php`, `dashboard.php` — entry & role router
+- `student_dashboard.php`, `teacher_dashboard.php`, `admin/dashboard.php` — role dashboards
+- `auth/` — login, logout, register
+- `config/` — `database.php`, `functions.php` (DB + helpers)
+- `assets/css/` — global and role-specific CSS
+- `database/` — `education_hub.sql` (seed) and `migrations/`
+- `tools/` — small utilities: migration runner, db check, test-user helpers
+- `includes/` — `header.php`, `sidebar.php`
+- `uploads/` — user-uploaded notes
+
+## Requirements
+
+- PHP 8.0 or newer
+- MySQL/MariaDB
+- Apache (XAMPP recommended on Windows)
+- `mod_rewrite` not required (plain PHP pages)
+
+## Quick Setup (Local, XAMPP)
+
+1. Copy repo into your XAMPP `htdocs` directory (example path used in this project):
+
+```bash
+C:\xampp\htdocs\EDUCATION_HUB
+```
+
+2. Start Apache & MySQL via XAMPP Control Panel.
+
+3. Create the database and import the initial dump:
+
+```bash
+# from Windows PowerShell or CMD (mysql client must be on PATH or use full path)
+"c:\\xampp\\mysql\\bin\\mysql.exe" -u root -e "CREATE DATABASE IF NOT EXISTS education_hub;"
+"c:\\xampp\\mysql\\bin\\mysql.exe" -u root education_hub < database/education_hub.sql
+```
+
+4. Run migrations (if any) to ensure schema is up-to-date. A migration runner is provided:
+
+```bash
+# from project root
+php tools/apply_migration.php
+```
+
+5. Configure database credentials (if using non-default root user) in `config/database.php`.
+
+6. (Optional) Create test users for quick verification (script added during development):
+
+```bash
+php tools/create_test_users.php
+```
+
+7. Visit the app:
+
+```
+http://localhost/EDUCATION_HUB/
+```
+
+## Useful Developer Commands
+
+- Syntax check a file:
+
+```bash
+"c:\\xampp\\php\\php.exe" -l path/to/file.php
+```
+
+- Run project-wide quick lint (example):
+
+```bash
+# check main files (example)
+"c:\\xampp\\php\\php.exe" -l auth/login.php
+```
+
+- Check Apache/PHP error log (Windows XAMPP):
+
+```powershell
+Get-Content 'C:\\xampp\\apache\\logs\\error.log' -Tail 200
+```
+
+## Troubleshooting
+
+- "Unknown column" or "Table doesn't exist":
+  - Ensure the DB has been imported (`database/education_hub.sql`) and run migrations (`php tools/apply_migration.php`).
+
+- Parse errors in PHP files:
+  - Run `php -l` on the file to locate the syntax issue.
+  - Historical parse errors may appear in `error.log` — verify the current codebase is lint-clean.
+
+- Database connection issues:
+  - Check `config/database.php` for credentials and host. Confirm MySQL service is running.
+
+- Session/role issues:
+  - This project expects `$_SESSION['user_id']` and role helpers in `config/functions.php`. If undefined, ensure users can log in and session storage works.
+
+## Tests / Verification
+
+During development the following checks were used:
+
+- Created `database/migrations/001_create_quizzes_table.sql` and applied it with `tools/apply_migration.php`.
+- Created test users with `tools/create_test_users.php` for student/teacher/admin flows (created then removed after verification).
+- Verified role dashboards load without SQL/PHP fatals using HTTP requests and checked Apache `error.log`.
+
+## Contributing
+
+- Fork, create a branch, implement your changes, and open a PR against `main`.
+- Keep changes small and focused. Run `php -l` on changed files before pushing.
+
+## License
+
+This project does not include an explicit license file. Add one (e.g., MIT) if you intend to publish permissively.
+
+---
+
+If you'd like, I can also:
+- Add a short `CONTRIBUTING.md` or a minimal `README` section for running unit/integration checks.
+- Create an automated migration script that runs on app bootstrap (careful with production environments).
 # 📚 Education Hub - Complete Project Documentation
 
 > **A comprehensive educational platform built with PHP, MySQL, HTML, CSS, and JavaScript for XAMPP**
